@@ -1,0 +1,28 @@
+# Directories
+.cloud
+.storage
+tts
+appdaemon/logs
+www/cameras
+
+# File types
+*.log
+*.db
+*.db-shm
+*.db-wal
+*.pyc
+._*
+__pycache__
+
+# Files - YAML
+groups.yaml
+ip_bans.yaml
+known_devices.yaml
+secrets.yaml
+shell_command.yaml
+zones.yaml
+
+# Files - other
+.google_maps_location_sharing.*
+.spotify-token-cache
+service_account.json

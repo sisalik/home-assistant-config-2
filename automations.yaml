@@ -1,0 +1,1344 @@
+- id: '1510432762465'
+  alias: 'Presence: Welcome home'
+  trigger:
+  - entity_id: device_tracker.google_maps_112293048245203127077
+    from: not_home
+    platform: state
+    to: home
+  condition: []
+  action:
+  - alias: Join notification
+    data:
+      data:
+        icon: https://goo.gl/xeetdy
+      message: Welcome home!
+      title: Home Assistant
+    service: notify.phone
+- id: '1510433515593'
+  alias: 'Presence: Have a nice day'
+  trigger:
+  - entity_id: device_tracker.google_maps_112293048245203127077
+    from: home
+    platform: state
+    to: not_home
+  condition: []
+  action:
+  - alias: Join notification
+    data:
+      data:
+        icon: https://goo.gl/xeetdy
+      message: Have a nice day!
+      title: Home Assistant
+    service: notify.phone
+- id: '1510437218738'
+  alias: 'Printer: Print started'
+  trigger:
+  - entity_id: sensor.printer_state
+    from: Operational
+    platform: state
+    to: Printing
+  - entity_id: sensor.printer_state
+    from: Starting
+    platform: state
+    to: Printing
+  condition: []
+  action:
+  - data:
+      command: ha:print_start
+    service: joaoapps_join.send_tasker
+- id: '1510437262730'
+  alias: 'Printer: Print done'
+  trigger:
+  - entity_id: sensor.printer_state
+    from: Printing
+    platform: state
+    to: Operational
+  - entity_id: sensor.printer_state
+    from: Finishing
+    platform: state
+    to: Operational
+  condition: []
+  action:
+  - data:
+      command: ha:print_done
+    service: joaoapps_join.send_tasker
+- id: '1550448060496'
+  alias: 'Printer: Shut down when done'
+  trigger:
+  - entity_id: sensor.printer_state
+    from: Printing
+    platform: state
+    to: Operational
+  condition: []
+  action:
+  - data:
+      entity_id: switch.printer_power
+    service: switch.turn_off
+  - data:
+      entity_id: automation.shut_down_when_done
+    service: automation.turn_off
+- id: '1565998634374'
+  alias: 'Printer: Keep warm'
+  trigger:
+  - entity_id: sensor.printer_state
+    from: Finishing
+    platform: state
+    to: Operational
+  condition: []
+  action:
+  - service: shell_command.set_printer_bed_temp
+  - data:
+      entity_id: automation.keep_warm
+    service: automation.turn_off
+- id: '1569537787601'
+  alias: 'Chromecast: Startup'
+  trigger:
+  - entity_id: media_player.tv
+    platform: state
+    to: playing
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: switch.tv_power
+      state: 'off'
+    - condition: state
+      entity_id: switch.kitchen_socket
+      state: 'off'
+  action:
+  - data:
+      entity_id:
+      - switch.kitchen_socket
+      - switch.tv_power
+    service: switch.turn_on
+  - data: {}
+    entity_id: input_boolean.chromecast_playing_delayed
+    service: input_boolean.turn_on
+- id: '1569537923850'
+  alias: 'Location: Not home'
+  trigger:
+  - entity_id: sensor.siim_location
+    platform: state
+    to: Away
+  condition: []
+  action:
+  - data:
+      entity_id: all
+    service: light.turn_off
+  - data: {}
+    entity_id: switch.tv_and_receiver
+    service: switch.turn_off
+  - data: {}
+    service: script.1578964535898
+  - data: {}
+    service: script.1578964984998
+  mode: single
+- id: '1569676820980'
+  alias: 'HA: Startup'
+  trigger:
+  - event: start
+    platform: homeassistant
+  condition: []
+  action:
+  - data:
+      command: ha:startup
+    service: joaoapps_join.send_tasker
+  - service: script.1579046577851
+- id: '1574879244138'
+  alias: 'Motion: Auto on (bedroom)'
+  description: When I get home and it's dark
+  trigger:
+  - entity_id: binary_sensor.desk_motion_sensor
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - below: '30'
+    condition: numeric_state
+    entity_id: sensor.desk_light_level
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: light.red_light
+      state: 'off'
+    - condition: state
+      entity_id: light.green_light
+      state: 'off'
+  action:
+  - data_template:
+      entity_id: "{% set lights_and_toggles = {\n  \"light.desk_lamp\": states.input_boolean.auto_desk_lamp.state,\n\
+        \  \"light.bedroom_lights\": states.input_boolean.auto_bedroom_lights.state,\n\
+        \  \"light.floor_lamp\": states.input_boolean.auto_floor_lamp.state,\n  \"\
+        light.red_light\": states.input_boolean.auto_red_light.state,\n  \"light.skylight\"\
+        : states.input_boolean.auto_skylight.state,\n} %} {{ lights_and_toggles.items()\
+        \ | selectattr('1', 'eq', 'on') | map(attribute='0') | join(', ') }}\n"
+    service: light.turn_on
+  mode: single
+- id: '1574879566588'
+  alias: 'Alert: Bedroom motion'
+  description: When I'm not at home
+  trigger:
+  - entity_id: binary_sensor.desk_motion_sensor
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.siim_home
+    state: 'off'
+  action:
+  - data:
+      entity_id: camera.ip_webcam
+      filename: /config/www/cameras/bedroom/snapshot_latest.jpg
+    service: camera.snapshot
+  - data:
+      entity_id: camera.ip_webcam
+      filename: /config/www/cameras/bedroom/snapshot_{{ now().strftime("%Y%m%d-%H%M")
+        }}.jpg
+    service: camera.snapshot
+  - data:
+      data:
+        icon: !secret favicon_url
+        image: !secret bedroom_cam_latest_url
+        smallicon: !secret favicon_url
+        url: !secret bedroom_cam_timestamp_url
+      message: Motion detected at the desk
+      title: Motion alert
+    service: notify.oneplus_7t
+- id: '1575061404675'
+  alias: 'Motion: Auto off (bedroom)'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.desk_motion_sensor
+    for: 0:05:00
+    platform: state
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.indoor_tracking
+    state: 'off'
+  action:
+  - data_template:
+      entity_id: "{% set lights_and_toggles = {\n  \"light.desk_lamp\": states.input_boolean.auto_desk_lamp.state,\n\
+        \  \"light.bedroom_lights\": states.input_boolean.auto_bedroom_lights.state,\n\
+        \  \"light.floor_lamp\": states.input_boolean.auto_floor_lamp.state,\n  \"\
+        light.red_light\": states.input_boolean.auto_red_light.state,\n  \"light.skylight\"\
+        : states.input_boolean.auto_skylight.state,\n} %} {{ lights_and_toggles.items()\
+        \ | selectattr('1', 'eq', 'on') | map(attribute='0') | join(', ') }}\n"
+    service: light.turn_off
+  mode: single
+- id: '1575921937463'
+  alias: 'Motion: Auto off (kitchen)'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_77860e71
+    for: 00:05:00
+    platform: state
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.indoor_tracking
+    state: 'off'
+  action:
+  - data_template:
+      entity_id: "{% set lights_and_toggles = {\n  \"light.mood_light\": states.input_boolean.auto_mood_light.state,\n\
+        \  \"light.green_light\": states.input_boolean.auto_green_light.state,\n \
+        \ \"light.fairy_lights\": states.input_boolean.auto_fairy_lights.state,\n\
+        \  \"light.worktop_lights\": states.input_boolean.auto_worktop_lights.state,\n\
+        \  \"light.kitchen_lights\": states.input_boolean.auto_kitchen_lights.state,\n\
+        } %} {{ lights_and_toggles.items() | selectattr('1', 'eq', 'on') | map(attribute='0')\
+        \ | join(', ') }}\n"
+    service: light.turn_off
+  mode: single
+- id: '1575922185160'
+  alias: 'Motion: Auto on (kitchen)'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_77860e71
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - below: '50'
+    condition: numeric_state
+    entity_id: sensor.kitchen_light_level
+  action:
+  - data_template:
+      entity_id: "{% set lights_and_toggles = {\n  \"light.mood_light\": states.input_boolean.auto_mood_light.state,\n\
+        \  \"light.green_light\": states.input_boolean.auto_green_light.state,\n \
+        \ \"light.fairy_lights\": states.input_boolean.auto_fairy_lights.state,\n\
+        \  \"light.worktop_lights\": states.input_boolean.auto_worktop_lights.state,\n\
+        \  \"light.kitchen_lights\": states.input_boolean.auto_kitchen_lights.state,\n\
+        } %} {{ lights_and_toggles.items() | selectattr('1', 'eq', 'on') | map(attribute='0')\
+        \ | join(', ') }}\n"
+    service: light.turn_on
+  mode: single
+- id: '1576172324536'
+  alias: 'Alert: Kitchen motion'
+  description: When I'm not at home
+  trigger:
+  - entity_id: binary_sensor.wyzesense_77860e71
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.siim_home
+    state: 'off'
+  action:
+  - data:
+      entity_id: camera.plants
+      filename: /config/www/cameras/kitchen2/snapshot_latest.jpg
+    service: camera.snapshot
+  - data:
+      entity_id: camera.plants
+      filename: /config/www/cameras/kitchen2/snapshot_{{ now().strftime("%Y%m%d-%H%M")
+        }}.jpg
+    service: camera.snapshot
+  - data:
+      data:
+        icon: !secret favicon_url
+        image: !secret kitchen_cam_latest_url
+        smallicon: !secret favicon_url
+        url: !secret kitchen_cam_timestamp_url
+      message: Motion detected in the kitchen
+      title: Motion alert
+    service: notify.oneplus_7t
+- id: '1576172470343'
+  alias: 'Alert: Front door opened'
+  description: When I'm not at home
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7784f7a7
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.siim_home
+    state: 'off'
+  action:
+  - data:
+      data:
+        icon: !secret favicon_url
+      message: The front door has been opened
+      title: Door alert
+    service: notify.oneplus_7t
+- id: '1578788939282'
+  alias: 'The Gardener: Turn off valve supply'
+  description: ''
+  trigger:
+  - entity_id: switch.valve_1
+    platform: state
+    to: 'off'
+  - entity_id: switch.valve_2
+    platform: state
+    to: 'off'
+  - entity_id: switch.valve_3
+    platform: state
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: switch.valve_1
+    state: 'off'
+  - condition: state
+    entity_id: switch.valve_2
+    state: 'off'
+  - condition: state
+    entity_id: switch.valve_3
+    state: 'off'
+  action:
+  - data:
+      entity_id: switch.scooter_charger
+    service: switch.turn_off
+- id: '1578789102995'
+  alias: 'The Gardener: Turn on valve supply'
+  description: ''
+  trigger:
+  - entity_id: switch.valve_1
+    platform: state
+    to: 'on'
+  - entity_id: switch.valve_2
+    platform: state
+    to: 'on'
+  - entity_id: switch.valve_3
+    platform: state
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: switch.scooter_charger
+    state: 'off'
+  action:
+  - data:
+      entity_id: switch.scooter_charger
+    service: switch.turn_on
+- id: '1579097758758'
+  alias: 'HA: Set day theme'
+  description: Based on sun position
+  trigger:
+  - event: sunrise
+    platform: sun
+  condition: []
+  action:
+  - data:
+      name: clear
+    service: frontend.set_theme
+- id: '1579310014462'
+  alias: 'HA: Set night theme'
+  description: Based on sun position
+  trigger:
+  - event: sunset
+    platform: sun
+  condition: []
+  action:
+  - data:
+      name: clear-dark
+    service: frontend.set_theme
+- id: '1581026834011'
+  alias: 'Magic switch: Light switch'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7784f1b2
+    platform: state
+  condition:
+  - condition: state
+    entity_id: input_select.magic_switch_mode
+    state: Light switch
+  action:
+  - data_template:
+      entity_id: '{% if is_state("input_select.indoor_location", "Bathroom") %} light.bathroom_lights
+        {% elif is_state("input_select.indoor_location", "Bedroom") %} light.desk_lamp
+        {% elif is_state("input_select.indoor_location", "Bed") %} light.green_light
+        {% elif is_state("input_select.indoor_location", "Kitchen") %} light.kitchen_lights
+        {% else %} light.kitchen_lights {% endif %}
+
+        '
+    service: light.toggle
+- id: '1582637742303'
+  alias: 'Gardener: Auto water plant 1'
+  description: ''
+  trigger:
+  - hours: '*'
+    minutes: /15
+    platform: time_pattern
+    seconds: '0'
+  condition:
+  - condition: template
+    value_template: '{{states.input_number.plant_1_humidity_setpoint.state > states.sensor.plant_1_soil_humidity.state}}'
+  - after: sunrise
+    before: sunset
+    condition: sun
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: sensor.plant_1_soil_humidity
+      state: unavailable
+  action:
+  - service: script.1576883219746
+- id: '1582637854800'
+  alias: 'Gardener: Auto water plant 2'
+  description: ''
+  trigger:
+  - hours: '*'
+    minutes: /15
+    platform: time_pattern
+    seconds: '0'
+  condition:
+  - condition: template
+    value_template: '{{states.input_number.plant_2_humidity_setpoint.state > states.sensor.plant_2_soil_humidity.state}}'
+  - after: sunrise
+    before: sunset
+    condition: sun
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: sensor.plant_2_soil_humidity
+      state: unavailable
+  action:
+  - service: script.1576883632201
+- id: '1582637901354'
+  alias: 'Gardener: Auto water plant 3'
+  description: ''
+  trigger:
+  - hours: '*'
+    minutes: /15
+    platform: time_pattern
+    seconds: '0'
+  condition:
+  - condition: template
+    value_template: '{{states.input_number.plant_3_humidity_setpoint.state > states.sensor.plant_3_soil_humidity.state}}'
+  - after: sunrise
+    before: sunset
+    condition: sun
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: sensor.plant_3_soil_humidity
+      state: unavailable
+  action:
+  - service: script.1576883668034
+- id: '1585869451159'
+  alias: 'Printer: Auto select uploaded'
+  description: ''
+  trigger:
+  - platform: mqtt
+    topic: stat/octopi/event/Upload
+  condition: []
+  action:
+  - data_template:
+      topic: octoprint/plugins/mqttsubscribe/files/local/{{ states('sensor.printer_uploaded_file')
+        }}
+    service: mqtt.publish
+- id: '1587460706423'
+  alias: 'Light: Turn off bedroom lights'
+  description: ''
+  trigger:
+  - above: '50'
+    entity_id: sensor.desk_light_level
+    platform: numeric_state
+  condition: []
+  action:
+  - data: {}
+    entity_id: light.desk_lamp, light.skylight, light.red_light, light.bedroom_lights
+    service: light.turn_off
+  mode: single
+- id: '1587840376620'
+  alias: 'Motion: Auto on (bathroom)'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7781864c
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - condition: or
+    conditions:
+    - below: '50'
+      condition: numeric_state
+      entity_id: sensor.kitchen_light_level
+    - condition: state
+      entity_id: switch.stock_light_mode
+      state: 'on'
+  action:
+  - data_template:
+      entity_id: "{% set lights_and_toggles = {\n  \"light.bathroom_lights\": states.input_boolean.auto_bathroom_lights.state,\n\
+        \  \"light.bathroom_led\": states.input_boolean.auto_bathroom_led.state,\n\
+        } %} {{ lights_and_toggles.items() | selectattr('1', 'eq', 'on') | map(attribute='0')\
+        \ | join(', ') }}\n"
+    service: light.turn_on
+  - condition: state
+    entity_id: switch.stock_light_mode
+    state: 'on'
+  - data: {}
+    entity_id: switch.bathroom_fan
+    service: switch.turn_on
+- id: '1587840509449'
+  alias: 'Motion: Auto off (bathroom)'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7781864c
+    for: 00:05:00
+    from: 'on'
+    platform: state
+    to: 'off'
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: input_boolean.indoor_tracking
+      state: 'off'
+    - condition: state
+      entity_id: switch.stock_light_mode
+      state: 'on'
+  action:
+  - data_template:
+      entity_id: "{% set lights_and_toggles = {\n  \"light.bathroom_lights\": states.input_boolean.auto_bathroom_lights.state,\n\
+        \  \"light.bathroom_led\": states.input_boolean.auto_bathroom_led.state,\n\
+        } %} {{ lights_and_toggles.items() | selectattr('1', 'eq', 'on') | map(attribute='0')\
+        \ | join(', ') }}\n"
+    service: light.turn_off
+  - condition: state
+    entity_id: switch.stock_light_mode
+    state: 'on'
+  - data: {}
+    entity_id: switch.bathroom_fan
+    service: switch.turn_off
+- id: '1587843077904'
+  alias: 'Chromecast: Auto volume'
+  description: ''
+  trigger:
+  - entity_id: media_player.tv
+    from: 'off'
+    platform: state
+  condition: []
+  action:
+  - data:
+      entity_id: media_player.tv
+      volume_level: 0.5
+    service: media_player.volume_set
+- id: '1587843402145'
+  alias: 'Chromecast: Not playing'
+  description: ''
+  trigger:
+  - entity_id: media_player.tv
+    from: playing
+    platform: state
+    to: unavailable
+  - entity_id: media_player.tv
+    from: playing
+    platform: state
+    to: 'off'
+  condition: []
+  action:
+  - data: {}
+    entity_id: input_boolean.chromecast_playing_delayed
+    service: input_boolean.turn_off
+- id: '1588115038914'
+  alias: 'Location: Enter bedroom'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.desk_motion_sensor
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - condition: template
+    value_template: '{{ not is_state(''input_select.indoor_location'', ''Bedroom'')
+      }}'
+  - condition: state
+    entity_id: sensor.siim_location
+    state: Home
+  action:
+  - data:
+      option: Bedroom
+    entity_id: input_select.indoor_location
+    service: input_select.select_option
+  - condition: state
+    entity_id: input_boolean.indoor_tracking
+    state: 'on'
+- id: '1588115180020'
+  alias: 'Location: Leave bedroom'
+  description: ''
+  trigger:
+  - entity_id: input_select.indoor_location
+    from: Bedroom
+    platform: state
+  condition:
+  - condition: state
+    entity_id: input_boolean.indoor_tracking
+    state: 'on'
+  action:
+  - data: {}
+    entity_id: automation.motion_auto_off_bedroom
+    service: automation.trigger
+- id: '1588115290538'
+  alias: 'Location: Enter kitchen'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_77860e71
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - condition: template
+    value_template: '{{ not is_state(''input_select.indoor_location'', ''Kitchen'')
+      }}'
+  - condition: state
+    entity_id: sensor.siim_location
+    state: Home
+  action:
+  - data:
+      option: Kitchen
+    entity_id: input_select.indoor_location
+    service: input_select.select_option
+  - condition: state
+    entity_id: input_boolean.indoor_tracking
+    state: 'on'
+- id: '1588115404705'
+  alias: 'Location: Leave kitchen'
+  description: ''
+  trigger:
+  - entity_id: input_select.indoor_location
+    from: Kitchen
+    platform: state
+  condition:
+  - condition: state
+    entity_id: input_boolean.indoor_tracking
+    state: 'on'
+  action:
+  - data: {}
+    entity_id: automation.motion_auto_off_kitchen
+    service: automation.trigger
+- id: '1588115751361'
+  alias: 'Location: Enter bathroom'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7781864c
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - condition: template
+    value_template: '{{ not is_state(''input_select.indoor_location'', ''Bathroom'')
+      }}'
+  - condition: state
+    entity_id: sensor.siim_location
+    state: Home
+  action:
+  - data:
+      option: Bathroom
+    entity_id: input_select.indoor_location
+    service: input_select.select_option
+  - condition: state
+    entity_id: input_boolean.indoor_tracking
+    state: 'on'
+- id: '1588115822759'
+  alias: 'Location: Leave bathroom'
+  description: ''
+  trigger:
+  - entity_id: input_select.indoor_location
+    from: Bathroom
+    platform: state
+  condition:
+  - condition: state
+    entity_id: input_boolean.indoor_tracking
+    state: 'on'
+  action:
+  - data: {}
+    entity_id: automation.motion_auto_off_bathroom
+    service: automation.trigger
+- id: '1588115958185'
+  alias: 'Location: Enter bed'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7780209d
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - condition: template
+    value_template: '{{ not is_state(''input_select.indoor_location'', ''Bed'') }}'
+  - condition: state
+    entity_id: sensor.siim_location
+    state: Home
+  action:
+  - data:
+      option: Bed
+    entity_id: input_select.indoor_location
+    service: input_select.select_option
+  - condition: state
+    entity_id: input_boolean.indoor_tracking
+    state: 'on'
+  - after: sunset
+    before: sunrise
+    condition: sun
+  - data: {}
+    entity_id: automation.motion_auto_on_bed
+    service: automation.trigger
+- id: '1588116031529'
+  alias: 'Location: Leave bed'
+  description: ''
+  trigger:
+  - entity_id: input_select.indoor_location
+    from: Bed
+    platform: state
+  condition:
+  - condition: state
+    entity_id: input_boolean.indoor_tracking
+    state: 'on'
+  action:
+  - data: {}
+    entity_id: automation.motion_auto_off_bed
+    service: automation.trigger
+- id: '1588161578000'
+  alias: 'Location: Enter outside'
+  description: ''
+  trigger:
+  - entity_id: sensor.siim_location
+    from: Home
+    platform: state
+    to: Away
+  - entity_id: sensor.siim_location
+    from: Home
+    platform: state
+    to: Work
+  condition:
+  - condition: template
+    value_template: '{{ not is_state(''input_select.indoor_location'', ''Outside'')
+      }}'
+  action:
+  - data:
+      option: Outside
+    entity_id: input_select.indoor_location
+    service: input_select.select_option
+  - condition: state
+    entity_id: input_boolean.indoor_tracking
+    state: 'on'
+- id: '1588161842545'
+  alias: 'Location: Enter staircase'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7784f7a7
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_select.indoor_location
+    state: Outside
+  action:
+  - data:
+      option: Staircase
+    entity_id: input_select.indoor_location
+    service: input_select.select_option
+- id: '1588469031454'
+  alias: 'Alert: Backups stale'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.snapshots_stale
+    from: 'False'
+    platform: state
+    to: 'True'
+  condition: []
+  action:
+  - data:
+      data:
+        icon: !secret favicon_url
+        smallicon: !secret favicon_url
+      message: Please visit the 'Hass.io Google Drive Backup' add-on status page for
+        details.
+      title: Snapshots are stale
+    service: notify.oneplus_7t
+- id: '1588469984798'
+  alias: 'Alert: Low soil humidity'
+  description: ''
+  trigger:
+  - platform: template
+    value_template: '{{ (states(''sensor.plant_1_soil_humidity'') | float < states(''input_number.plant_1_humidity_setpoint'')
+      | float - 10)
+
+      or (states(''sensor.plant_2_soil_humidity'') | float < states(''input_number.plant_2_humidity_setpoint'')
+      | float - 10)
+
+      or (states(''sensor.plant_3_soil_humidity'') | float < states(''input_number.plant_3_humidity_setpoint'')
+      | float - 10) }}'
+  condition:
+  - above: '0'
+    condition: numeric_state
+    entity_id: sensor.plant_1_soil_humidity
+  - above: '0'
+    condition: numeric_state
+    entity_id: sensor.plant_2_soil_humidity
+  - above: '0'
+    condition: numeric_state
+    entity_id: sensor.plant_3_soil_humidity
+  action:
+  - data_template:
+      data:
+        icon: !secret favicon_url
+        smallicon: !secret favicon_url
+      message: Your plants are getting a bit thirsty, please check the tank water
+        level.
+      title: Plants getting thirsty
+    service: notify.oneplus_7t
+  mode: single
+- id: '1588545805094'
+  alias: 'Alert: Balcony door opened'
+  description: When I'm not home
+  trigger:
+  - entity_id: binary_sensor.wyzesense_777f8f54
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.siim_home
+    state: 'off'
+  action:
+  - data:
+      data:
+        icon: !secret favicon_url
+      message: The balcony door has been opened
+      title: Door alert
+    service: notify.oneplus_7t
+- id: '1588545995140'
+  alias: 'Alert: About to rain with balcony door open'
+  description: ''
+  trigger:
+  - above: '90'
+    entity_id: sensor.dark_sky_precip_probability
+    platform: numeric_state
+  condition:
+  - condition: state
+    entity_id: binary_sensor.wyzesense_777f8f54
+    state: 'on'
+  action:
+  - data:
+      data:
+        icon: !secret favicon_url
+      message: It's about to rain - you may want to close the balcony door!
+      title: Weather alert
+    service: notify.oneplus_7t
+- id: '1588603173664'
+  alias: 'Alert: Letterbox opened'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_777fde74
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition: []
+  action:
+  - data:
+      data:
+        icon: !secret favicon_url
+      message: The letterbox has been opened. Might be a letter, might be junk.
+      title: New post
+    service: notify.oneplus_7t
+- id: '1588710692941'
+  alias: 'Humidity: Auto on (bathroom fan)'
+  description: ''
+  trigger:
+  - above: '70'
+    entity_id: sensor.bathroom_humidity
+    platform: numeric_state
+  condition: []
+  action:
+  - data: {}
+    entity_id: switch.bathroom_fan
+    service: switch.turn_on
+- id: '1588710748129'
+  alias: 'Humidity: Auto off (bathroom fan)'
+  description: ''
+  trigger:
+  - below: '65'
+    entity_id: sensor.bathroom_humidity
+    platform: numeric_state
+  condition: []
+  action:
+  - data: {}
+    entity_id: switch.bathroom_fan
+    service: switch.turn_off
+- id: '1589314562028'
+  alias: 'Printer: Print paused'
+  description: ''
+  trigger:
+  - entity_id: sensor.printer_state
+    from: Printing
+    platform: state
+    to: Pausing
+  condition: []
+  action:
+  - data:
+      command: ha:print_paused
+    service: joaoapps_join.send_tasker
+- id: '1589314710474'
+  alias: 'Printer: Print resumed'
+  description: ''
+  trigger:
+  - entity_id: sensor.printer_state
+    from: Paused
+    platform: state
+    to: Resuming
+  condition: []
+  action:
+  - data:
+      command: ha:print_resumed
+    service: joaoapps_join.send_tasker
+- id: '1589314774209'
+  alias: 'Printer: Print cancelled'
+  description: ''
+  trigger:
+  - entity_id: sensor.printer_state
+    platform: state
+    to: Cancelling
+  condition: []
+  action:
+  - data:
+      command: ha:print_cancelled
+    service: joaoapps_join.send_tasker
+- id: '1590611365099'
+  alias: 'Motion: Auto on (bed)'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7780209d
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - after: sunset
+    before: sunrise
+    condition: sun
+  - condition: state
+    entity_id: input_select.indoor_location
+    state: Bedroom
+  action:
+  - entity_id: light.red_light
+    service: light.turn_on
+- id: '1590611617076'
+  alias: 'Motion: Auto off (bed)'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7780209d
+    for: 00:05:00
+    from: 'on'
+    platform: state
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.indoor_tracking
+    state: 'off'
+  action:
+  - entity_id: light.green_light,light.red_light
+    service: light.turn_off
+  mode: single
+- id: '1590618808526'
+  alias: 'Alert: Going to bed with balcony door open'
+  description: ''
+  trigger:
+  - entity_id: input_select.indoor_location
+    platform: state
+    to: Bed
+  condition:
+  - condition: state
+    entity_id: binary_sensor.wyzesense_777f8f54
+    state: 'on'
+  action:
+  - data:
+      data:
+        icon: !secret favicon_url
+      message: You may want to close the balcony door for the night!
+      title: Door alert
+    service: notify.oneplus_7t
+- id: '1590618884230'
+  alias: 'Alert: Leaving home with balcony door open'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.siim_home
+    from: 'on'
+    platform: state
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.wyzesense_777f8f54
+    state: 'on'
+  action:
+  - data:
+      data:
+        icon: !secret favicon_url
+      message: You may want to close the balcony door when leaving the house!
+      title: Door alert
+    service: notify.oneplus_7t
+- id: '1592331049117'
+  alias: 'Schedule: Turn on low-light mode'
+  description: ''
+  trigger:
+  - at: '23:00'
+    platform: time
+  condition:
+  - condition: state
+    entity_id: binary_sensor.siim_home
+    state: 'on'
+  action:
+  - data: {}
+    entity_id: switch.low_light_mode
+    service: switch.turn_on
+  - data:
+      method: reset_room
+    service: script.ad_presence_light_controller
+  mode: single
+- id: '1592331115767'
+  alias: 'Schedule: Turn on active light mode'
+  description: ''
+  trigger:
+  - event: sunrise
+    platform: sun
+  condition:
+  - condition: state
+    entity_id: binary_sensor.siim_home
+    state: 'on'
+  action:
+  - data: {}
+    entity_id: switch.active_light_mode
+    service: switch.turn_on
+- id: '1592601541852'
+  alias: 'Location: Stay in kitchen'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7781864c
+    from: 'on'
+    platform: state
+    to: 'off'
+  - entity_id: binary_sensor.desk_motion_sensor
+    from: 'on'
+    platform: state
+    to: 'off'
+  - entity_id: binary_sensor.wyzesense_7780209d
+    from: 'on'
+    platform: state
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.wyzesense_7780209d
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.wyzesense_7781864c
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.desk_motion_sensor
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.wyzesense_77860e71
+    state: 'on'
+  action:
+  - data: {}
+    entity_id: automation.location_enter_kitchen
+    service: automation.trigger
+  - below: '50'
+    condition: numeric_state
+    entity_id: sensor.kitchen_light_level
+  - data: {}
+    entity_id: automation.motion_turn_on_kitchen_lights
+    service: automation.trigger
+- id: '1592603956297'
+  alias: 'Location: Stay in bedroom'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7780209d
+    from: 'on'
+    platform: state
+    to: 'off'
+  - entity_id: binary_sensor.wyzesense_7781864c
+    from: 'on'
+    platform: state
+    to: 'off'
+  - entity_id: binary_sensor.wyzesense_77860e71
+    from: 'on'
+    platform: state
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.desk_motion_sensor
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.wyzesense_7780209d
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.wyzesense_7781864c
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.wyzesense_77860e71
+    state: 'off'
+  action:
+  - data: {}
+    entity_id: automation.location_enter_bedroom
+    service: automation.trigger
+  - below: '30'
+    condition: numeric_state
+    entity_id: sensor.desk_light_level
+  - data: {}
+    entity_id: automation.motion_turn_on_desk_lights
+    service: automation.trigger
+- id: '1592605385388'
+  alias: 'Location: Stay in bed'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.desk_motion_sensor
+    from: 'on'
+    platform: state
+    to: 'off'
+  - entity_id: binary_sensor.wyzesense_7781864c
+    from: 'on'
+    platform: state
+    to: 'off'
+  - entity_id: binary_sensor.wyzesense_77860e71
+    from: 'on'
+    platform: state
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.wyzesense_7780209d
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.desk_motion_sensor
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.wyzesense_7781864c
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.wyzesense_77860e71
+    state: 'off'
+  action:
+  - data: {}
+    entity_id: automation.motion_enter_bed
+    service: automation.trigger
+  - after: sunset
+    before: sunrise
+    condition: sun
+  - data: {}
+    entity_id: automation.motion_auto_on_bed
+    service: automation.trigger
+- id: '1592605580396'
+  alias: 'Location: Stay in bathroom'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7780209d
+    from: 'on'
+    platform: state
+    to: 'off'
+  - entity_id: binary_sensor.wyzesense_77860e71
+    from: 'on'
+    platform: state
+    to: 'off'
+  - entity_id: binary_sensor.desk_motion_sensor
+    from: 'on'
+    platform: state
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.wyzesense_7781864c
+    state: 'on'
+  - condition: state
+    entity_id: binary_sensor.wyzesense_7780209d
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.wyzesense_77860e71
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.desk_motion_sensor
+    state: 'off'
+  action:
+  - data: {}
+    entity_id: automation.location_enter_bathroom
+    service: automation.trigger
+  - below: '50'
+    condition: numeric_state
+    entity_id: sensor.kitchen_light_level
+  - data: {}
+    entity_id: automation.motion_auto_on_bathroom
+    service: automation.trigger
+- id: '1593191957703'
+  alias: 'Dev: Chromecast state change'
+  description: ''
+  trigger:
+  - entity_id: media_player.tv
+    platform: state
+  condition: []
+  action:
+  - data_template:
+      value: '{{ trigger.to_state.state }}'
+    entity_id: input_text.dev_chromecast_state
+    service: input_text.set_value
+- id: '1593193756628'
+  alias: 'Chromecast: Auto off'
+  description: ''
+  trigger:
+  - entity_id: media_player.tv
+    for: 00:30:00
+    platform: state
+    to: idle
+  - entity_id: media_player.tv
+    for: 00:30:00
+    platform: state
+    to: 'off'
+  - entity_id: media_player.tv
+    for: 00:30:00
+    platform: state
+    to: paused
+  - entity_id: switch.tv_power
+    for: 00:00:30
+    platform: state
+    to: 'off'
+  condition: []
+  action:
+  - data: {}
+    entity_id: switch.tv_and_receiver
+    service: switch.turn_off
+  mode: single
+- id: '1593286524128'
+  alias: 'Magic switch: Timer'
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.wyzesense_7784f1b2
+    platform: state
+  condition:
+  - condition: state
+    entity_id: input_select.magic_switch_mode
+    state: Timer
+  action:
+  - data:
+      command: ha:timer_start
+    service: joaoapps_join.send_tasker
+- id: '1603283466964'
+  alias: 'Alter: The Gardener offline'
+  description: ''
+  trigger:
+  - entity_id: sensor.plant_1_soil_humidity
+    for: 00:01:00
+    platform: state
+    to: unavailable
+  - entity_id: sensor.plant_2_soil_humidity
+    for: 00:01:00
+    platform: state
+    to: unavailable
+  - entity_id: sensor.plant_3_soil_humidity
+    for: 00:01:00
+    platform: state
+    to: unavailable
+  condition: []
+  action:
+  - data_template:
+      data:
+        icon: !secret favicon_url
+        smallicon: !secret favicon_url
+      message: The plant watering system is offline. Your plants may suffer.
+      title: The Gardener offline
+    service: notify.oneplus_7t
+  mode: single
+- id: '1608547350316'
+  alias: 'Palantir: Outgoing call'
+  description: ''
+  trigger:
+  - entity_id: sensor.palantir_call_state
+    platform: state
+    to: OUTGOING
+  condition: []
+  action:
+  - data:
+      command: ha:palantir_incoming
+    service: joaoapps_join.send_tasker
+  mode: single
+- id: '1608547534797'
+  alias: 'Palantir: Call acknowledged'
+  description: ''
+  trigger:
+  - entity_id: sensor.palantir_call_state
+    platform: state
+    to: ACKED
+  condition: []
+  action:
+  - data:
+      command: ha:palantir_acked
+    service: joaoapps_join.send_tasker
+  - data: {}
+    service: script.palantir_end_call
+  mode: single
+- id: '1618604250723'
+  alias: 'Printer: Auto-start print'
+  description: ''
+  trigger:
+  - event_data:
+      entity_id: timer.printer_auto_start
+    event_type: timer.finished
+    platform: event
+  condition: []
+  action:
+  - data: {}
+    entity_id: switch.printer_power
+    service: switch.turn_on
+  - timeout: '60'
+    wait_template: '{{ is_state("sensor.printer_state", "Operational") }}'
+  - data: {}
+    service: rest_command.printer_select_file
+  - data: {}
+    service: script.start_print
+  mode: single

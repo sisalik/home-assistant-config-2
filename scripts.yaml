@@ -1,0 +1,247 @@
+warm_up_printer:
+  sequence:
+  - entity_id: switch.printer_power
+    service: switch.turn_on
+  - wait_template: '{{ is_state(''sensor.printer_state'', ''Operational'') }}'
+  - service: shell_command.set_printer_bed_temp
+  - wait_template: '{{ states(''sensor.printer_bed_temperature_actual'') | float >
+      50 }}'
+  - service: shell_command.set_printer_extruder_temp
+  - wait_template: '{{ states(''sensor.printer_tool_temperature_actual'') | float
+      > 220 }}'
+  - data:
+      command: ha:warmup_complete
+    service: joaoapps_join.send_tasker
+start_print:
+  sequence:
+  - service: shell_command.start_print
+pause_print:
+  sequence:
+  - service: shell_command.pause_print
+cancel_print:
+  sequence:
+  - service: shell_command.cancel_print
+work_mode:
+  alias: Chill mode
+  sequence:
+  - data:
+      entity_id: media_player.tv
+      media_content_id: https://www.youtube.com/watch?v=RDfjXj5EGqI
+      media_content_type: video/youtube
+    service: media_extractor.play_media
+sleep:
+  alias: Sleep
+  sequence:
+  - data:
+      entity_id: all
+    service: light.turn_off
+  - data:
+      entity_id: all
+    service: media_player.media_stop
+  mode: single
+ad_presence_light_controller:
+  alias: 'AppDaemon: Presence Light Controller'
+  sequence: []
+  mode: single
+'1566135307104':
+  alias: Restart mood light
+  sequence:
+  - data:
+      payload: '1'
+      topic: cmnd/mood-light/RESTART
+    service: mqtt.publish
+'1566150135518':
+  alias: 'TV input: Chromecast'
+  sequence:
+  - data:
+      payload: HDMI2
+      qos: 1
+      retain: true
+      topic: cmnd/tv-bridge/INPUT
+    service: mqtt.publish
+'1566150148884':
+  alias: 'TV input: Laptop'
+  sequence:
+  - data:
+      payload: HDMI1
+      qos: 1
+      retain: true
+      topic: cmnd/tv-bridge/INPUT
+    service: mqtt.publish
+'1571093606159':
+  alias: Going to bed
+  sequence:
+  - data: {}
+    service: light.turn_off
+  - data:
+      entity_id: light.red_light
+    service: light.turn_on
+'1574903008794':
+  alias: Spotify on TV
+  sequence:
+  - data:
+      entity_id: media_player.tv
+    service: spotcast.start
+'1575116771125':
+  alias: Morning light
+  sequence:
+  - below: '50'
+    condition: numeric_state
+    entity_id: sensor.desk_light_level
+  - entity_id:
+    - light.bedroom_lights
+    service: light.turn_on
+  mode: single
+'1576883219746':
+  alias: Water plant 1
+  sequence:
+  - data:
+      entity_id: switch.valve_1
+    service: switch.turn_on
+  - delay:
+      seconds: '{{ states(''input_number.plant_1_watering_duration'') | int }}'
+  - data:
+      entity_id: switch.valve_1
+    service: switch.turn_off
+'1576883632201':
+  alias: Water plant 2
+  sequence:
+  - data:
+      entity_id: switch.valve_2
+    service: switch.turn_on
+  - delay:
+      seconds: '{{ states(''input_number.plant_2_watering_duration'') | int }}'
+  - data:
+      entity_id: switch.valve_2
+    service: switch.turn_off
+'1576883668034':
+  alias: Water plant 3
+  sequence:
+  - data:
+      entity_id: switch.valve_3
+    service: switch.turn_on
+  - delay:
+      seconds: '{{ states(''input_number.plant_3_watering_duration'') | int }}'
+  - data:
+      entity_id: switch.valve_3
+    service: switch.turn_off
+'1578964535898':
+  alias: 'PC: Screen off'
+  sequence:
+  - data:
+      payload: SCREEN-OFF
+      topic: cmnd/kil-pc/POWER
+    service: mqtt.publish
+'1578964943495':
+  alias: 'PC: Sleep'
+  sequence:
+  - data:
+      payload: SLEEP
+      topic: cmnd/kil-pc/POWER
+    service: mqtt.publish
+'1578964963007':
+  alias: 'PC: Hibernate'
+  sequence:
+  - data:
+      payload: HIBERNATE
+      topic: cmnd/kil-pc/POWER
+    service: mqtt.publish
+'1578964984998':
+  alias: 'Laptop: Screen off'
+  sequence:
+  - data:
+      payload: SCREEN-OFF
+      topic: cmnd/kil-laptop/POWER
+    service: mqtt.publish
+'1578965002430':
+  alias: 'Laptop: Sleep'
+  sequence:
+  - data:
+      payload: SLEEP
+      topic: cmnd/kil-laptop/POWER
+    service: mqtt.publish
+'1578965027840':
+  alias: 'Laptop: Hibernate'
+  sequence:
+  - data:
+      payload: HIBERNATE
+      topic: cmnd/kil-laptop/POWER
+    service: mqtt.publish
+'1579046577851':
+  alias: 'HA: Set day/night theme'
+  sequence:
+  - data_template:
+      name: "{% if is_state(\"sun.sun\", \"above_horizon\") %}\n  clear\n{% else %}\n\
+        \  clear-dark\n{% endif %}\n"
+    service: frontend.set_theme
+'1589306354303':
+  alias: 'Printer: Restart OctoPrint'
+  sequence:
+  - data:
+      topic: octoprint/plugins/mqttsubscribe/system/commands/core/restart
+    service: mqtt.publish
+'1590616833543':
+  alias: 'Lights: Activate current mode'
+  sequence:
+  - data_template:
+      entity_id: '{% if is_state("input_select.indoor_location", "Bathroom") %} automation.location_leave_bathroom
+        {% elif is_state("input_select.indoor_location", "Bedroom") %} automation.location_leave_bedroom
+        {% elif is_state("input_select.indoor_location", "Bed") %} automation.location_leave_bed
+        {% elif is_state("input_select.indoor_location", "Kitchen") %} automation.location_leave_kitchen
+        {% else %} none {% endif %}
+
+        '
+    service: automation.trigger
+  - data_template:
+      entity_id: '{% if is_state("input_select.indoor_location", "Bathroom") %} automation.motion_auto_on_bathroom
+        {% elif is_state("input_select.indoor_location", "Bedroom") %} automation.motion_turn_on_desk_lights
+        {% elif is_state("input_select.indoor_location", "Bed") %} automation.motion_auto_on_bed
+        {% elif is_state("input_select.indoor_location", "Kitchen") %} automation.motion_auto_on_kitchen
+        {% else %} none {% endif %}
+
+        '
+    service: automation.trigger
+palantir_start_call:
+  alias: 'Palantir: Start call'
+  icon: mdi:phone
+  mode: single
+  sequence:
+  - data:
+      payload: INCOMING
+      topic: cloud/cmnd/palantir/CALL
+    service: mqtt.publish
+palantir_end_call:
+  alias: 'Palantir: End call'
+  icon: mdi:phone-cancel
+  mode: single
+  sequence:
+  - data:
+      payload: ACKED
+      topic: cloud/cmnd/palantir/CALL
+    service: mqtt.publish
+lights_more_light_in_current_room:
+  alias: 'Lights: More light in current room'
+  mode: single
+  sequence:
+  - data:
+      delta: 1
+      method: adjust_light_level
+    service: script.ad_presence_light_controller
+  icon: mdi:lightbulb
+lights_less_light_in_current_room:
+  alias: 'Lights: Less light in current room'
+  icon: mdi:lightbulb-outline
+  mode: single
+  sequence:
+  - data:
+      delta: -1
+      method: adjust_light_level
+    service: script.ad_presence_light_controller
+printer_start_auto_print_timer:
+  alias: 'Printer: Start auto-print timer'
+  mode: single
+  sequence:
+  - data_template:
+      duration: '{{ states.input_datetime.printer_auto_start_delay.state }}'
+    entity_id: timer.printer_auto_start
+    service: timer.start

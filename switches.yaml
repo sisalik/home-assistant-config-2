@@ -1,0 +1,458 @@
+- platform: mqtt
+  name: "Kitchen socket"
+  state_topic: "stat/kitchen-socket/POWER"
+  command_topic: "cmnd/kitchen-socket/POWER"
+  availability_topic: "tele/kitchen-socket/LWT"
+  qos: 1
+  payload_on: "ON"
+  payload_off: "OFF"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  retain: false
+- platform: mqtt
+  name: "TV power"
+  state_topic: "stat/tv-bridge/POWER"
+  command_topic: "cmnd/tv-bridge/POWER"
+  availability_topic: "tele/tv-bridge/LWT"
+  qos: 1
+  payload_on: "ON"
+  payload_off: "OFF"
+  payload_available: "online"
+  payload_not_available: "offline"
+  retain: true
+- platform: mqtt
+  name: "Scooter charger"
+  state_topic: "stat/sonoff-6089/POWER"
+  command_topic: "cmnd/sonoff-6089/POWER"
+  availability_topic: "tele/sonoff-6089/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  qos: 1
+  retain: false
+- platform: mqtt
+  name: "Kitchen PSU"
+  state_topic: "stat/sonoff-1C5A93/POWER"
+  command_topic: "cmnd/sonoff-1C5A93/POWER"
+  availability_topic: "tele/sonoff-1C5A93/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  qos: 1
+  retain: false
+- platform: mqtt
+  name: "Bathroom fan"
+  state_topic: "stat/sonoff-00B6E9/POWER2"
+  command_topic: "cmnd/sonoff-00B6E9/POWER2"
+  availability_topic: "tele/sonoff-00B6E9/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  qos: 1
+  retain: false
+- platform: mqtt
+  name: "Bedroom fan"
+  state_topic: "stat/floor-lamp/POWER"
+  command_topic: "cmnd/floor-lamp/POWER"
+  availability_topic: "tele/floor-lamp/LWT"
+  qos: 1
+  payload_on: "ON"
+  payload_off: "OFF"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  retain: false
+- platform: mqtt
+  name: "Valve 1"
+  state_topic: "stat/the-gardener/VALVE1"
+  command_topic: "cmnd/the-gardener/VALVE1"
+  availability_topic: "tele/the-gardener/LWT"
+- platform: mqtt
+  name: "Valve 2"
+  state_topic: "stat/the-gardener/VALVE2"
+  command_topic: "cmnd/the-gardener/VALVE2"
+  availability_topic: "tele/the-gardener/LWT"
+- platform: mqtt
+  name: "Valve 3"
+  state_topic: "stat/the-gardener/VALVE3"
+  command_topic: "cmnd/the-gardener/VALVE3"
+  availability_topic: "tele/the-gardener/LWT"
+  qos: 1
+  retain: false
+- platform: mqtt
+  name: "TV screen"
+  state_topic: "stat/tv-bridge/SCREEN"
+  command_topic: "cmnd/tv-bridge/SCREEN"
+  availability_topic: "tele/tv-bridge/LWT"
+  qos: 1
+  payload_on: "ON"
+  payload_off: "OFF"
+  payload_available: "online"
+  payload_not_available: "offline"
+  retain: true
+
+- platform: template
+  switches:
+    current_room_more_light:
+      turn_on:
+        service: script.lights_more_light_in_current_room
+      turn_off:
+        service: script.lights_more_light_in_current_room
+    current_room_less_light:
+      turn_on:
+        service: script.lights_less_light_in_current_room
+      turn_off:
+        service: script.lights_less_light_in_current_room
+    printer_power:
+      value_template: "{{ not is_state('sensor.printer_state', 'Offline') }}"
+      availability_template: "{{ not is_state('sensor.printer_state', 'unavailable') }}"
+      turn_on:
+        service: mqtt.publish
+        data:
+          topic: octoprint/plugins/mqttsubscribe/system/commands/custom/printer on
+      turn_off:
+        service: mqtt.publish
+        data:
+          topic: octoprint/plugins/mqttsubscribe/system/commands/custom/printer off
+    tv_and_receiver:
+      value_template: "{{ is_state('switch.tv_power', 'on') or is_state('switch.kitchen_socket', 'on') }}"
+      turn_on:
+        service: switch.turn_on
+        data:
+          entity_id:
+            - switch.tv_power
+            - switch.kitchen_socket
+      turn_off:
+        service: switch.turn_off
+        data:
+          entity_id:
+            - switch.tv_power
+            - switch.kitchen_socket
+
+    # Combined auto-on and auto-off toggles
+    # desk_lights_auto:
+    #   value_template: "{{ is_state('automation.motion_turn_on_desk_lights', 'on') or is_state('automation.motion_auto_off_bedroom', 'on') }}"
+    #   turn_on:
+    #     service: automation.turn_on
+    #     data:
+    #       entity_id:
+    #         - automation.motion_turn_on_desk_lights
+    #         - automation.motion_auto_off_bedroom
+    #   turn_off:
+    #     service: automation.turn_off
+    #     data:
+    #       entity_id:
+    #         - automation.motion_turn_on_desk_lights
+    #         - automation.motion_auto_off_bedroom
+    # bathroom_lights_auto:
+    #   value_template: "{{ is_state('automation.motion_auto_on_bathroom', 'on') or is_state('automation.motion_auto_off_bathroom', 'on') }}"
+    #   turn_on:
+    #     service: automation.turn_on
+    #     data:
+    #       entity_id:
+    #         - automation.motion_auto_on_bathroom
+    #         - automation.motion_auto_off_bathroom
+    #   turn_off:
+    #     service: automation.turn_off
+    #     data:
+    #       entity_id:
+    #         - automation.motion_auto_on_bathroom
+    #         - automation.motion_auto_off_bathroom
+    bathroom_fan_auto:
+      value_template: "{{ is_state('automation.humidity_auto_on_bathroom_fan', 'on') or is_state('automation.humidity_auto_off_bathroom_fan', 'on') }}"
+      turn_on:
+        service: automation.turn_on
+        data:
+          entity_id:
+            - automation.humidity_auto_on_bathroom_fan
+            - automation.humidity_auto_off_bathroom_fan
+      turn_off:
+        service: automation.turn_off
+        data:
+          entity_id:
+            - automation.humidity_auto_on_bathroom_fan
+            - automation.humidity_auto_off_bathroom_fan
+    # kitchen_lights_auto:
+    #   value_template: "{{ is_state('automation.motion_turn_on_kitchen_lights', 'on') or is_state('automation.motion_auto_off_kitchen', 'on') }}"
+    #   turn_on:
+    #     service: automation.turn_on
+    #     data:
+    #       entity_id:
+    #         - automation.motion_turn_on_kitchen_lights
+    #         - automation.motion_auto_off_kitchen
+    #   turn_off:
+    #     service: automation.turn_off
+    #     data:
+    #       entity_id:
+    #         - automation.motion_turn_on_kitchen_lights
+    #         - automation.motion_auto_off_kitchen
+
+    # Lighting modes
+    # Off
+    off_light_mode:
+      friendly_name: "Off"
+      value_template: >
+        {% if is_state('input_boolean.auto_desk_lamp', 'off')
+          and is_state('input_boolean.auto_bedroom_lights', 'off')
+          and is_state('input_boolean.auto_floor_lamp', 'off')
+          and is_state('input_boolean.auto_red_light', 'off')
+          and is_state('input_boolean.auto_rainbow', 'off')
+          and is_state('input_boolean.auto_skylight', 'off')
+          and is_state('input_boolean.auto_bathroom_led', 'off')
+          and is_state('input_boolean.auto_bathroom_lights', 'off')
+          and is_state('input_boolean.auto_mood_light', 'off')
+          and is_state('input_boolean.auto_fairy_lights', 'off')
+          and is_state('input_boolean.auto_worktop_lights', 'off')
+          and is_state('input_boolean.auto_kitchen_lights', 'off')
+          and is_state('input_boolean.auto_green_light', 'off')
+        %}
+          on
+        {% else %}
+          off
+        {% endif %}
+      turn_on:
+        - service: input_boolean.turn_off
+          data:
+            entity_id:
+              - input_boolean.auto_desk_lamp
+              - input_boolean.auto_skylight
+              - input_boolean.auto_red_light
+              - input_boolean.auto_rainbow
+              - input_boolean.auto_green_light
+              - input_boolean.auto_bedroom_lights
+              - input_boolean.auto_floor_lamp
+              - input_boolean.auto_bathroom_led
+              - input_boolean.auto_bathroom_lights
+              - input_boolean.auto_mood_light
+              - input_boolean.auto_fairy_lights
+              - input_boolean.auto_worktop_lights
+              - input_boolean.auto_kitchen_lights
+        - service: input_text.set_value
+          data_template:
+            entity_id: input_text.lighting_mode_previous
+            value: "{{ states('input_text.lighting_mode_current') }}"
+        - service: input_text.set_value
+          data:
+            entity_id: input_text.lighting_mode_current
+            value: "switch.off_light_mode"
+      turn_off:
+        - service: switch.turn_on
+          data_template:
+            entity_id: "{{ states('input_text.lighting_mode_previous') }}"
+
+    # Stock
+    stock_light_mode:
+      friendly_name: Stock
+      value_template: >
+        {% if is_state('input_boolean.auto_desk_lamp', 'off')
+          and is_state('input_boolean.auto_bedroom_lights', 'off')
+          and is_state('input_boolean.auto_floor_lamp', 'off')
+          and is_state('input_boolean.auto_red_light', 'off')
+          and is_state('input_boolean.auto_rainbow', 'off')
+          and is_state('input_boolean.auto_skylight', 'off')
+          and is_state('input_boolean.auto_bathroom_led', 'off')
+          and is_state('input_boolean.auto_bathroom_lights', 'on')
+          and is_state('input_boolean.auto_mood_light', 'off')
+          and is_state('input_boolean.auto_fairy_lights', 'off')
+          and is_state('input_boolean.auto_worktop_lights', 'off')
+          and is_state('input_boolean.auto_kitchen_lights', 'off')
+          and is_state('input_boolean.auto_green_light', 'off')
+        %}
+          on
+        {% else %}
+          off
+        {% endif %}
+      turn_on:
+        - service: input_boolean.turn_on
+          data:
+            entity_id:
+              - input_boolean.auto_bathroom_lights
+        - service: input_boolean.turn_off
+          data:
+            entity_id:
+              - input_boolean.auto_desk_lamp
+              - input_boolean.auto_skylight
+              - input_boolean.auto_red_light
+              - input_boolean.auto_rainbow
+              - input_boolean.auto_green_light
+              - input_boolean.auto_bedroom_lights
+              - input_boolean.auto_floor_lamp
+              - input_boolean.auto_bathroom_led
+              - input_boolean.auto_mood_light
+              - input_boolean.auto_fairy_lights
+              - input_boolean.auto_worktop_lights
+              - input_boolean.auto_kitchen_lights
+              - input_boolean.indoor_tracking
+        - service: input_text.set_value
+          data_template:
+            entity_id: input_text.lighting_mode_previous
+            value: "{{ states('input_text.lighting_mode_current') }}"
+        - service: input_text.set_value
+          data:
+            entity_id: input_text.lighting_mode_current
+            value: "switch.stock_light_mode"
+      turn_off:
+        - service: switch.turn_on
+          data_template:
+            entity_id: "{{ states('input_text.lighting_mode_previous') }}"
+
+    # Low
+    low_light_mode:
+      friendly_name: Low
+      value_template: >
+        {% if is_state('input_boolean.auto_desk_lamp', 'off')
+          and is_state('input_boolean.auto_bedroom_lights', 'off')
+          and is_state('input_boolean.auto_floor_lamp', 'off')
+          and is_state('input_boolean.auto_red_light', 'on')
+          and is_state('input_boolean.auto_rainbow', 'on')
+          and is_state('input_boolean.auto_skylight', 'off')
+          and is_state('input_boolean.auto_bathroom_led', 'on')
+          and is_state('input_boolean.auto_bathroom_lights', 'off')
+          and is_state('input_boolean.auto_mood_light', 'on')
+          and is_state('input_boolean.auto_fairy_lights', 'on')
+          and is_state('input_boolean.auto_worktop_lights', 'off')
+          and is_state('input_boolean.auto_kitchen_lights', 'off')
+          and is_state('input_boolean.auto_green_light', 'off')
+        %}
+          on
+        {% else %}
+          off
+        {% endif %}
+      turn_on:
+        - service: input_boolean.turn_on
+          data:
+            entity_id:
+              - input_boolean.auto_red_light
+              - input_boolean.auto_rainbow
+              - input_boolean.auto_bathroom_led
+              - input_boolean.auto_mood_light
+              - input_boolean.auto_fairy_lights
+        - service: input_boolean.turn_off
+          data:
+            entity_id:
+              - input_boolean.auto_desk_lamp
+              - input_boolean.auto_skylight
+              - input_boolean.auto_green_light
+              - input_boolean.auto_bedroom_lights
+              - input_boolean.auto_floor_lamp
+              - input_boolean.auto_bathroom_lights
+              - input_boolean.auto_worktop_lights
+              - input_boolean.auto_kitchen_lights
+        - service: input_text.set_value
+          data_template:
+            entity_id: input_text.lighting_mode_previous
+            value: "{{ states('input_text.lighting_mode_current') }}"
+        - service: input_text.set_value
+          data:
+            entity_id: input_text.lighting_mode_current
+            value: "switch.low_light_mode"
+      turn_off:
+        - service: switch.turn_on
+          data_template:
+            entity_id: "{{ states('input_text.lighting_mode_previous') }}"
+    
+    # Active    
+    active_light_mode:
+      friendly_name: Active
+      value_template: >
+        {% if is_state('input_boolean.auto_desk_lamp', 'on')
+          and is_state('input_boolean.auto_bedroom_lights', 'off')
+          and is_state('input_boolean.auto_floor_lamp', 'off')
+          and is_state('input_boolean.auto_red_light', 'off')
+          and is_state('input_boolean.auto_rainbow', 'off')
+          and is_state('input_boolean.auto_skylight', 'on')
+          and is_state('input_boolean.auto_bathroom_led', 'off')
+          and is_state('input_boolean.auto_bathroom_lights', 'on')
+          and is_state('input_boolean.auto_mood_light', 'off')
+          and is_state('input_boolean.auto_fairy_lights', 'off')
+          and is_state('input_boolean.auto_worktop_lights', 'on')
+          and is_state('input_boolean.auto_kitchen_lights', 'off')
+          and is_state('input_boolean.auto_green_light', 'off')
+        %}
+          on
+        {% else %}
+          off
+        {% endif %}
+      turn_on:
+        - service: input_boolean.turn_on
+          data:
+            entity_id:
+              - input_boolean.auto_desk_lamp
+              - input_boolean.auto_skylight
+              - input_boolean.auto_bathroom_lights
+              - input_boolean.auto_worktop_lights
+        - service: input_boolean.turn_off
+          data:
+            entity_id:
+              - input_boolean.auto_red_light
+              - input_boolean.auto_rainbow
+              - input_boolean.auto_green_light
+              - input_boolean.auto_bedroom_lights
+              - input_boolean.auto_floor_lamp
+              - input_boolean.auto_bathroom_led
+              - input_boolean.auto_mood_light
+              - input_boolean.auto_fairy_lights
+              - input_boolean.auto_kitchen_lights
+        - service: input_text.set_value
+          data_template:
+            entity_id: input_text.lighting_mode_previous
+            value: "{{ states('input_text.lighting_mode_current') }}"
+        - service: input_text.set_value
+          data:
+            entity_id: input_text.lighting_mode_current
+            value: "switch.active_light_mode"
+      turn_off:
+        - service: switch.turn_on
+          data_template:
+            entity_id: "{{ states('input_text.lighting_mode_previous') }}"
+    
+    # Max    
+    max_light_mode:
+      friendly_name: Max
+      value_template: >
+        {% if is_state('input_boolean.auto_desk_lamp', 'on')
+          and is_state('input_boolean.auto_bedroom_lights', 'on')
+          and is_state('input_boolean.auto_floor_lamp', 'on')
+          and is_state('input_boolean.auto_red_light', 'off')
+          and is_state('input_boolean.auto_rainbow', 'off')
+          and is_state('input_boolean.auto_skylight', 'on')
+          and is_state('input_boolean.auto_bathroom_led', 'off')
+          and is_state('input_boolean.auto_bathroom_lights', 'on')
+          and is_state('input_boolean.auto_mood_light', 'off')
+          and is_state('input_boolean.auto_fairy_lights', 'off')
+          and is_state('input_boolean.auto_worktop_lights', 'on')
+          and is_state('input_boolean.auto_kitchen_lights', 'on')
+          and is_state('input_boolean.auto_green_light', 'off')
+        %}
+          on
+        {% else %}
+          off
+        {% endif %}
+      turn_on:
+        - service: input_boolean.turn_on
+          data:
+            entity_id:
+              - input_boolean.auto_desk_lamp
+              - input_boolean.auto_skylight
+              - input_boolean.auto_bedroom_lights
+              - input_boolean.auto_floor_lamp
+              - input_boolean.auto_bathroom_lights
+              - input_boolean.auto_worktop_lights
+              - input_boolean.auto_kitchen_lights
+        - service: input_boolean.turn_off
+          data:
+            entity_id:
+              - input_boolean.auto_red_light
+              - input_boolean.auto_rainbow
+              - input_boolean.auto_green_light
+              - input_boolean.auto_bathroom_led
+              - input_boolean.auto_mood_light
+              - input_boolean.auto_fairy_lights
+        - service: input_text.set_value
+          data_template:
+            entity_id: input_text.lighting_mode_previous
+            value: "{{ states('input_text.lighting_mode_current') }}"
+        - service: input_text.set_value
+          data:
+            entity_id: input_text.lighting_mode_current
+            value: "switch.max_light_mode"
+      turn_off:
+        - service: switch.turn_on
+          data_template:
+            entity_id: "{{ states('input_text.lighting_mode_previous') }}"

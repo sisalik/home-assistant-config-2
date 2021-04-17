@@ -1,0 +1,3 @@
+palantir:
+  module: palantir
+  class: Palantir

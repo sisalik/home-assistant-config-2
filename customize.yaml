@@ -1,0 +1,264 @@
+sensor.street_view_battery_level:
+  friendly_name: Battery level
+sensor.street_view_battery_temperature:
+  friendly_name: Battery temperature
+sensor.street_view_light_level:
+  friendly_name: Light level
+sensor.printer_current_state:
+  friendly_name: Current state
+  hidden: true
+sensor.printer_job_percentage:
+  friendly_name: Job progress
+  hidden: true
+  unit_of_measurement: '%'
+sensor.printer_time_elapsed:
+  friendly_name: Time elapsed
+  hidden: true
+sensor.printer_time_remaining:
+  friendly_name: Time remaining
+  hidden: true
+sensor.printer_target_bed_temp:
+  friendly_name: Bed temp. (target)
+  hidden: true
+  icon: mdi:target
+sensor.printer_actual_bed_temp:
+  friendly_name: Bed temp. (actual)
+  hidden: true
+sensor.printer_target_tool0_temp:
+  friendly_name: Extruder temp. (target)
+  hidden: true
+  icon: mdi:target
+sensor.printer_actual_tool0_temp:
+  friendly_name: Extruder temp. (actual)
+  hidden: true
+sensor.weather_humidity:
+  friendly_name: Humidity
+  hidden: true
+sensor.weather_precipitation:
+  friendly_name: Precipitation
+  hidden: true
+sensor.weather_pressure:
+  friendly_name: Pressure
+  hidden: true
+sensor.weather_symbol:
+  friendly_name: Conditions
+  hidden: true
+sensor.weather_temperature:
+  friendly_name: Temperature
+  hidden: true
+script.open_main_gate:
+  friendly_name: Main gate
+  icon: mdi:gate
+script.open_side_gate:
+  friendly_name: Side gate
+  icon: mdi:gate
+script.warm_up_printer:
+  friendly_name: Auto warm-up
+  icon: mdi:auto-upload
+  can_cancel: false
+script.cancel_print:
+  friendly_name: Cancel print
+  icon: mdi:stop
+  can_cancel: false
+switch.main_gate:
+  hidden: true
+switch.side_gate:
+  hidden: true
+media_player.bedroom_tv:
+  hidden: true
+media_player.kitchen: {}
+media_player.tv:
+  hidden: true
+media_player.ue40j6300_ue40j6300:
+  hidden: true
+script.pause_print:
+  friendly_name: Pause print
+  icon: mdi:play-pause
+script.start_print:
+  friendly_name: Start print
+  icon: mdi:play
+automation.morning_light:
+  hidden: true
+automation.turn_on_the_light_when_it_gets_dark:
+  hidden: true
+sensor.bedroom_temperature:
+  friendly_name: Temperature (desk)
+switch.heater:
+  icon: mdi:radiator
+light.bedroom_lights:
+  friendly_name: Ceiling lights
+sensor.account_balance:
+  icon: mdi:currency-usd
+sensor.hash_rate:
+  icon: mdi:speedometer
+sensor.fan_speed:
+  icon: mdi:fan
+camera.printer:
+  friendly_name: Printer
+sensor.octoprint_current_state:
+  hidden: true
+sensor.octoprint_job_percentage:
+  hidden: true
+binary_sensor.octoprint_printing:
+  hidden: true
+binary_sensor.octoprint_printing_error:
+  hidden: true
+sensor.octoprint_time_elapsed:
+  hidden: true
+sensor.octoprint_time_remaining:
+  hidden: true
+sensor.printer_status_combined:
+  icon: mdi:printer-3d
+sensor.printer_time_elapsed_formatted:
+  icon: mdi:clock-start
+sensor.printer_time_remaining_formatted:
+  icon: mdi:clock-end
+sensor.octoprint_actual_bed_temp:
+  hidden: true
+sensor.octoprint_actual_tool0_temp:
+  hidden: true
+sensor.octoprint_target_bed_temp:
+  hidden: true
+sensor.octoprint_target_tool0_temp:
+  hidden: true
+group.gates:
+  order: 4
+group.bedroom:
+  order: 1
+group.printer:
+  order: 5
+group.living_room:
+  order: 2
+group.corridor:
+  order: 3
+script.work_mode:
+  icon: mdi:fire
+script.sleep:
+  icon: mdi:power-sleep
+sensor.bedroom_humidity_bed:
+  friendly_name: Humidity (ceiling)
+  icon: mdi:water-percent
+sensor.bedroom_temperature_bed:
+  friendly_name: Temperature (ceiling)
+sensor.bedroom_2_humidity:
+  friendly_name: Humidity
+  icon: mdi:water-percent
+sensor.living_room_humidity:
+  friendly_name: Humidity
+  icon: mdi:water-percent
+sensor.bedroom_2_temperature:
+  friendly_name: Temperature
+sensor.bedroom_humidity_floor:
+  friendly_name: Humidity (floor)
+  icon: mdi:water-percent
+sensor.bedroom_temperature_floor:
+  friendly_name: Temperature (floor)
+sensor.living_room_temperature:
+  friendly_name: Temperature
+automation.shut_down_when_done:
+  icon: mdi:flash-auto
+weather.home:
+  order: '0'
+sensor.kitchen_humidity:
+  friendly_name: Humidity
+  icon: mdi:water-percent
+sensor.kitchen_temperature:
+  friendly_name: Temperature
+light.kitchen_lights:
+  friendly_name: Ceiling lights
+switch.kitchen_socket:
+  friendly_name: Receiver
+automation.keep_warm:
+  icon: mdi:fire
+sensor.ip_webcam_motion:
+  unit_of_measurement: units
+binary_sensor.desk_motion_sensor:
+  device_class: motion
+  friendly_name: Desk motion
+  icon: mdi:walk
+switch.valve_1:
+  icon: mdi:water-pump
+switch.valve_2:
+  icon: mdi:water-pump
+switch.valve_3:
+  icon: mdi:water-pump
+script.1576883219746:
+  icon: mdi:sprout
+script.1576883632201:
+  icon: mdi:sprout
+script.1576883668034:
+  icon: mdi:sprout
+switch.scooter_charger:
+  friendly_name: Valve supply
+sensor.ip_webcam_battery_level:
+  friendly_name: Battery level
+sensor.ip_webcam_battery_temperature:
+  friendly_name: Battery temperature
+camera.ip_webcam:
+  friendly_name: Phone camera
+sensor.ip_webcam_video_connections:
+  friendly_name: Video connections
+  icon: mdi:lan-connect
+sensor.desk_light_level:
+  icon: mdi:brightness-5
+binary_sensor.wyzesense_7780209d:
+  friendly_name: Bed motion
+device_tracker.hd1900:
+  friendly_name: Phone location
+binary_sensor.wyzesense_7781864c:
+  friendly_name: Bathroom motion
+binary_sensor.wyzesense_7784f1b2:
+  friendly_name: Wireless switch 1
+input_select.indoor_location:
+  friendly_name: Indoor location
+automation.gardener_auto_water_plant_1:
+  icon: mdi:sprout
+automation.gardener_auto_water_plant_2:
+  icon: mdi:sprout
+automation.gardener_auto_water_plant_3:
+  icon: mdi:sprout
+binary_sensor.wyzesense_77860e71:
+  friendly_name: Kitchen motion
+sensor.time_in_bathroom_past_week:
+  icon: mdi:shower
+sensor.time_in_bed_past_week:
+  icon: mdi:hotel
+sensor.time_in_bedroom_past_week:
+  icon: mdi:desk
+sensor.time_in_kitchen_past_week:
+  icon: mdi:silverware-fork-knife
+sensor.time_in_outside_past_week:
+  icon: mdi:nature-people
+sensor.time_in_work_past_week:
+  icon: mdi:briefcase
+switch.bathroom_fan:
+  icon: mdi:fan
+sensor.bathroom_humidity:
+  icon: mdi:water-percent
+binary_sensor.wyzesense_777f8f54:
+  friendly_name: Balcony door
+binary_sensor.wyzesense_7786890a:
+  friendly_name: Bathroom door
+binary_sensor.wyzesense_777fde74:
+  friendly_name: Letterbox
+switch.tv_and_receiver:
+  friendly_name: TV and receiver
+  icon: mdi:television
+sensor.printer_state:
+  icon: mdi:printer-3d
+sensor.printer_job_name:
+  icon: mdi:file
+sensor.kitchen_light_level:
+  icon: mdi:brightness-5
+switch.off_light_mode:
+  icon: mdi:brightness-1
+switch.low_light_mode:
+  icon: mdi:brightness-3
+switch.stock_light_mode:
+  icon: mdi:shield-search
+switch.active_light_mode:
+  icon: mdi:brightness-4
+switch.max_light_mode:
+  icon: mdi:brightness-7
+binary_sensor.wardrobe_motion_sensor:
+  device_class: motion

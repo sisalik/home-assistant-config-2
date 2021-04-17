@@ -1,0 +1,616 @@
+################################################################################
+# Weather
+################################################################################
+- platform: darksky
+  api_key: 2abaa42b7668c19821c69478d37c3ef9
+  forecast:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+  monitored_conditions:
+    - icon
+    - summary
+    - nearest_storm_distance
+    - nearest_storm_bearing
+    - humidity
+    - temperature
+    - temperature_high
+    - temperature_low
+    - apparent_temperature
+    - apparent_temperature_high
+    - apparent_temperature_low
+    - wind_speed
+    - wind_bearing
+    - precip_type
+    - precip_probability
+    - precip_accumulation
+    - precip_intensity
+    - precip_intensity_max
+    - uv_index
+    - daily_summary
+    - pressure
+    - visibility
+  scan_interval:
+    minutes: 5
+
+- platform: uptime
+  unit_of_measurement: hours
+
+- platform: mold_indicator
+  name: Bathroom mould probability
+  indoor_temp_sensor: sensor.bathroom_temperature
+  indoor_humidity_sensor: sensor.bathroom_humidity
+  outdoor_temp_sensor: sensor.dark_sky_temperature
+  calibration_factor: 1.86  # See calculations below
+  # temp_criticalpoint = 15.0 (roof window frame)
+  # temp_indoor = 22.4
+  # temp_outdoor = 6.4
+  # Based on https://www.home-assistant.io/integrations/mold_indicator/
+
+################################################################################
+# MQTT sensors
+################################################################################
+# Temperature and humidity
+- platform: mqtt
+  name: Bedroom temperature (bed)
+  unit_of_measurement: °C
+  state_topic: "tele/desk-lamp/SENSOR"
+  value_template: "{{ value_json.SI7021.Temperature }}"
+  availability_topic: "tele/desk-lamp/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+- platform: mqtt
+  name: Bedroom humidity (bed)
+  unit_of_measurement: "%"
+  state_topic: "tele/desk-lamp/SENSOR"
+  value_template: "{{ value_json.SI7021.Humidity }}"
+  availability_topic: "tele/desk-lamp/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+- platform: mqtt
+  name: Bedroom temperature (floor)
+  unit_of_measurement: °C
+  state_topic: "tele/floor-lamp/SENSOR"
+  value_template: "{{ value_json.SI7021.Temperature }}"
+  availability_topic: "tele/floor-lamp/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+- platform: mqtt
+  name: Bedroom humidity (floor)
+  unit_of_measurement: "%"
+  state_topic: "tele/floor-lamp/SENSOR"
+  value_template: "{{ value_json.SI7021.Humidity }}"
+  availability_topic: "tele/floor-lamp/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+- platform: mqtt
+  name: Kitchen temperature (floor)
+  unit_of_measurement: °C
+  state_topic: "tele/kitchen-socket/SENSOR"
+  value_template: "{{ value_json.SI7021.Temperature }}"
+  availability_topic: "tele/kitchen-socket/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+- platform: mqtt
+  name: Kitchen humidity (floor)
+  unit_of_measurement: "%"
+  state_topic: "tele/kitchen-socket/SENSOR"
+  value_template: "{{ value_json.SI7021.Humidity }}"
+  availability_topic: "tele/kitchen-socket/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+- platform: mqtt
+  name: Kitchen temperature (worktop)
+  unit_of_measurement: °C
+  state_topic: "tele/sonoff-6B4165/SENSOR"
+  value_template: "{{ value_json.SI7021.Temperature }}"
+  availability_topic: "tele/sonoff-6B4165/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+- platform: mqtt
+  name: Kitchen humidity (worktop)
+  unit_of_measurement: "%"
+  state_topic: "tele/sonoff-6B4165/SENSOR"
+  value_template: "{{ value_json.SI7021.Humidity }}"
+  availability_topic: "tele/sonoff-6B4165/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+- platform: mqtt
+  name: Bathroom temperature
+  unit_of_measurement: °C
+  state_topic: "tele/sonoff-00B6E9/SENSOR"
+  value_template: "{{ value_json.SI7021.Temperature }}"
+  availability_topic: "tele/sonoff-00B6E9/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+- platform: mqtt
+  name: Bathroom humidity
+  unit_of_measurement: "%"
+  state_topic: "tele/sonoff-00B6E9/SENSOR"
+  value_template: "{{ value_json.SI7021.Humidity }}"
+  availability_topic: "tele/sonoff-00B6E9/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+
+# Light level
+- platform: mqtt
+  name: Desk light level
+  unit_of_measurement: "%"
+  state_topic: "stat/desk-controller/LIGHT"
+  availability_topic: "tele/desk-controller/LWT"
+  value_template: "{{ (value | float / 1023 * 100) | round(0) }}"
+- platform: mqtt
+  name: Kitchen light level
+  unit_of_measurement: "lx"
+  state_topic: "stat/tv-bridge/LIGHT"
+  availability_topic: "tele/tv-bridge/LWT"
+  
+# Soil humidity
+- platform: mqtt
+  name: Plant 1 soil humidity
+  unit_of_measurement: "%"
+  state_topic: "stat/the-gardener/PLANT1"
+  availability_topic: "tele/the-gardener/LWT"
+  value_template: "{{ (value | float / 1023 * 100) | round(0) }}"
+- platform: mqtt
+  name: Plant 2 soil humidity
+  unit_of_measurement: "%"
+  state_topic: "stat/the-gardener/PLANT2"
+  availability_topic: "tele/the-gardener/LWT"
+  value_template: "{{ (value | float / 1023 * 100) | round(0) }}"
+- platform: mqtt
+  name: Plant 3 soil humidity
+  unit_of_measurement: "%"
+  state_topic: "stat/the-gardener/PLANT3"
+  availability_topic: "tele/the-gardener/LWT"
+  value_template: "{{ (value | float / 1023 * 100) | round(0) }}"
+  
+################################################################################
+# Sonoff platform sensors
+################################################################################
+- platform: mqtt
+  name: Mood light wifi
+  unit_of_measurement: "%"
+  state_topic: "tele/mood-light/STATE"
+  value_template: "{{ value_json.Wifi.RSSI }}"
+- platform: mqtt
+  name: Mood light IP
+  state_topic: "tele/mood-light/INFO2"
+  value_template: "{{ value_json.IPAddress }}"
+- platform: mqtt
+  name: Mood light uptime
+  unit_of_measurement: "h"
+  state_topic: "tele/mood-light/STATE"
+  value_template: >-
+      {% set split_uptime = value_json.Uptime.split(":") %}
+      {% set days = split_uptime[0].split("T")[0] %}
+      {% set hours = split_uptime[0].split("T")[1] %}
+      {% set uptime_hours = days|int * 24 + hours|int + split_uptime[1]|int / 60 + split_uptime[2]|int / 3600 %}
+      {{ uptime_hours | round(2) }}
+- platform: mqtt
+  name: Desk lamp wifi
+  unit_of_measurement: "%"
+  state_topic: "tele/desk-lamp/STATE"
+  value_template: "{{ value_json.Wifi.RSSI }}"
+- platform: mqtt
+  name: Desk lamp uptime
+  unit_of_measurement: "h"
+  state_topic: "tele/desk-lamp/STATE"
+  value_template: >-
+      {% set split_uptime = value_json.Uptime.split(":") %}
+      {% set days = split_uptime[0].split("T")[0] %}
+      {% set hours = split_uptime[0].split("T")[1] %}
+      {% set uptime_hours = days|int * 24 + hours|int + split_uptime[1]|int / 60 + split_uptime[2]|int / 3600 %}
+      {{ uptime_hours | round(2) }}
+- platform: mqtt
+  name: Floor lamp wifi
+  unit_of_measurement: "%"
+  state_topic: "tele/floor-lamp/STATE"
+  value_template: "{{ value_json.Wifi.RSSI }}"
+- platform: mqtt
+  name: Floor lamp uptime
+  unit_of_measurement: "h"
+  state_topic: "tele/floor-lamp/STATE"
+  value_template: >-
+      {% set split_uptime = value_json.Uptime.split(":") %}
+      {% set days = split_uptime[0].split("T")[0] %}
+      {% set hours = split_uptime[0].split("T")[1] %}
+      {% set uptime_hours = days|int * 24 + hours|int + split_uptime[1]|int / 60 + split_uptime[2]|int / 3600 %}
+      {{ uptime_hours | round(2) }}
+- platform: mqtt
+  name: Kitchen socket wifi
+  unit_of_measurement: "%"
+  state_topic: "tele/kitchen-socket/STATE"
+  value_template: "{{ value_json.Wifi.RSSI }}"
+- platform: mqtt
+  name: Kitchen socket uptime
+  unit_of_measurement: "h"
+  state_topic: "tele/kitchen-socket/STATE"
+  value_template: >-
+      {% set split_uptime = value_json.Uptime.split(":") %}
+      {% set days = split_uptime[0].split("T")[0] %}
+      {% set hours = split_uptime[0].split("T")[1] %}
+      {% set uptime_hours = days|int * 24 + hours|int + split_uptime[1]|int / 60 + split_uptime[2]|int / 3600 %}
+      {{ uptime_hours | round(2) }}
+- platform: mqtt
+  name: Kitchen lights wifi
+  unit_of_measurement: "%"
+  state_topic: "tele/kitchen-lights/STATE"
+  value_template: "{{ value_json.Wifi.RSSI }}"
+- platform: mqtt
+  name: Kitchen lights uptime
+  unit_of_measurement: "h"
+  state_topic: "tele/kitchen-lights/STATE"
+  value_template: >-
+      {% set split_uptime = value_json.Uptime.split(":") %}
+      {% set days = split_uptime[0].split("T")[0] %}
+      {% set hours = split_uptime[0].split("T")[1] %}
+      {% set uptime_hours = days|int * 24 + hours|int + split_uptime[1]|int / 60 + split_uptime[2]|int / 3600 %}
+      {{ uptime_hours | round(2) }}
+
+################################################################################
+# Computer sensors
+################################################################################
+# PC sensors
+- platform: mqtt
+  name: PC power status
+  icon: mdi:power-standby
+  state_topic: "stat/kil-pc/POWER"
+  availability_topic: "tele/kil-pc/LWT"
+- platform: mqtt
+  name: PC CPU usage
+  unit_of_measurement: "%"
+  icon: mdi:cpu-64-bit
+  state_topic: "tele/kil-pc/CPU"
+  availability_topic: "tele/kil-pc/LWT"
+- platform: mqtt
+  name: PC memory usage
+  unit_of_measurement: "%"
+  icon: mdi:memory
+  state_topic: "tele/kil-pc/MEMORY"
+  availability_topic: "tele/kil-pc/LWT"
+- platform: mqtt
+  name: PC uptime
+  unit_of_measurement: "h"
+  icon: mdi:clock-outline
+  state_topic: "tele/kil-pc/UPTIME"
+  availability_topic: "tele/kil-pc/LWT"
+- platform: mqtt
+  name: PC idle time
+  unit_of_measurement: "s"
+  icon: mdi:alarm-snooze
+  state_topic: "tele/kil-pc/IDLE"
+  availability_topic: "tele/kil-pc/LWT"
+- platform: mqtt
+  name: PC download speed
+  unit_of_measurement: "kB/s"
+  icon: mdi:speedometer
+  state_topic: "tele/kil-pc/DOWNLOAD"
+  availability_topic: "tele/kil-pc/LWT"
+- platform: mqtt
+  name: PC upload speed
+  unit_of_measurement: "kB/s"
+  icon: mdi:speedometer
+  state_topic: "tele/kil-pc/UPLOAD"
+  availability_topic: "tele/kil-pc/LWT"
+
+# Laptop sensors
+- platform: mqtt
+  name: Laptop power status
+  icon: mdi:power-standby
+  state_topic: "stat/kil-laptop/POWER"
+  availability_topic: "tele/kil-laptop/LWT"
+- platform: mqtt
+  name: Laptop CPU usage
+  unit_of_measurement: "%"
+  icon: mdi:cpu-64-bit
+  state_topic: "tele/kil-laptop/CPU"
+  availability_topic: "tele/kil-laptop/LWT"
+- platform: mqtt
+  name: Laptop memory usage
+  unit_of_measurement: "%"
+  icon: mdi:memory
+  state_topic: "tele/kil-laptop/MEMORY"
+  availability_topic: "tele/kil-laptop/LWT"
+- platform: mqtt
+  name: Laptop uptime
+  unit_of_measurement: "h"
+  icon: mdi:clock-outline
+  state_topic: "tele/kil-laptop/UPTIME"
+  availability_topic: "tele/kil-laptop/LWT"
+- platform: mqtt
+  name: Laptop idle time
+  unit_of_measurement: "s"
+  icon: mdi:alarm-snooze
+  state_topic: "tele/kil-laptop/IDLE"
+  availability_topic: "tele/kil-laptop/LWT"
+- platform: mqtt
+  name: Laptop download speed
+  unit_of_measurement: "kB/s"
+  icon: mdi:speedometer
+  state_topic: "tele/kil-laptop/DOWNLOAD"
+  availability_topic: "tele/kil-laptop/LWT"
+- platform: mqtt
+  name: Laptop upload speed
+  unit_of_measurement: "kB/s"
+  icon: mdi:speedometer
+  state_topic: "tele/kil-laptop/UPLOAD"
+  availability_topic: "tele/kil-laptop/LWT"
+
+# 3D printer sensors
+- platform: mqtt
+  name: Printer state
+  state_topic: "stat/octopi/event/PrinterStateChanged"
+  value_template: "{{ value_json.state_string }}"
+  availability_topic: "stat/octopi/lwt"
+  payload_available: connected
+  payload_not_available: disconnected
+- platform: mqtt
+  name: Printer job name
+  state_topic: "stat/octopi/event/FileSelected"
+  value_template: "{{ value_json.name }}"
+  availability_topic: "stat/octopi/lwt"
+  payload_available: connected
+  payload_not_available: disconnected
+- platform: mqtt
+  name: Printer uploaded file
+  state_topic: "stat/octopi/event/Upload"
+  value_template: "{{ value_json.path }}"
+  availability_topic: "stat/octopi/lwt"
+  payload_available: connected
+  payload_not_available: disconnected
+- platform: mqtt
+  name: Printer job percentage
+  state_topic: "stat/octopi/progress/printing"
+  value_template: "{{ value_json.progress }}"
+  availability_topic: "stat/octopi/lwt"
+  payload_available: connected
+  payload_not_available: disconnected
+- platform: mqtt
+  name: Printer time elapsed
+  state_topic: "stat/octopi/progress/printing"
+  value_template: "{{ value_json.printer_data.progress.printTime }}"
+  availability_topic: "stat/octopi/lwt"
+  payload_available: connected
+  payload_not_available: disconnected
+- platform: mqtt
+  name: Printer time remaining
+  state_topic: "stat/octopi/progress/printing"
+  value_template: "{{ value_json.printer_data.progress.printTimeLeft }}"
+  availability_topic: "stat/octopi/lwt"
+  payload_available: connected
+  payload_not_available: disconnected
+- platform: mqtt
+  name: Printer bed temperature target
+  unit_of_measurement: "°C"
+  state_topic: "stat/octopi/temperature/bed"
+  value_template: "{{ value_json.target }}"
+  availability_topic: "stat/octopi/lwt"
+  payload_available: connected
+  payload_not_available: disconnected
+- platform: mqtt
+  name: Printer bed temperature actual
+  unit_of_measurement: "°C"
+  state_topic: "stat/octopi/temperature/bed"
+  value_template: "{{ value_json.actual }}"
+  availability_topic: "stat/octopi/lwt"
+  payload_available: connected
+  payload_not_available: disconnected
+- platform: mqtt
+  name: Printer tool temperature target
+  unit_of_measurement: "°C"
+  state_topic: "stat/octopi/temperature/tool0"
+  value_template: "{{ value_json.target }}"
+  availability_topic: "stat/octopi/lwt"
+  payload_available: connected
+  payload_not_available: disconnected
+- platform: mqtt
+  name: Printer tool temperature actual
+  unit_of_measurement: "°C"
+  state_topic: "stat/octopi/temperature/tool0"
+  value_template: "{{ value_json.actual }}"
+  availability_topic: "stat/octopi/lwt"
+  payload_available: connected
+  payload_not_available: disconnected
+
+# Palantir
+- platform: mqtt
+  name: Palantir red
+  unit_of_measurement: "%"
+  icon: mdi:speedometer
+  state_topic: "cloud/stat/palantir/RED"
+  availability_topic: "cloud/tele/palantir/LWT"
+- platform: mqtt
+  name: Palantir green
+  unit_of_measurement: "%"
+  icon: mdi:speedometer
+  state_topic: "cloud/stat/palantir/GREEN"
+  availability_topic: "cloud/tele/palantir/LWT"
+- platform: mqtt
+  name: Palantir call state
+  icon: mdi:phone
+  state_topic: "cloud/stat/palantir/CALL"
+  availability_topic: "cloud/tele/palantir/LWT"
+
+# OctoPi system sensors
+- platform: mqtt
+  name: Octopi CPU temperature
+  unit_of_measurement: "°C"
+  state_topic: "tele/octopi/TEMPERATURE"
+  value_template: "{{ value | multiply(0.001) | round(1) }}"
+- platform: mqtt
+  name: Octopi CPU usage
+  unit_of_measurement: "%"
+  state_topic: "tele/octopi/CPU"
+
+################################################################################
+# Command line sensors
+################################################################################
+- platform: command_line
+  name: CPU temperature
+  command: "cat /sys/class/thermal/thermal_zone0/temp"
+  unit_of_measurement: "°C"
+  value_template: '{{ value | multiply(0.001) | round(1) }}'
+
+################################################################################
+# System monitor
+################################################################################
+- platform: systemmonitor
+  resources:
+    - type: disk_use_percent
+      arg: /
+    - type: memory_free
+    - type: load_1m
+    - type: processor_use
+    - type: last_boot
+
+################################################################################
+# Template sensors
+################################################################################
+- platform: template
+  sensors:
+    # outside_temperature_forecast:
+    #   value_template: '{{ states.weather.home.attributes.temperature }}'
+    #   friendly_name: Outside temperature (forecast)
+    #   unit_of_measurement: "°C"
+    # outside_humidity_forecast:
+    #   value_template: '{{ states.weather.home.attributes.humidity }}'
+    #   friendly_name: Outside humidity (forecast)
+    #   unit_of_measurement: "%"
+    printer_time_remaining_formatted:
+      friendly_name: Time remaining
+      value_template: >-
+        {% set time = states.sensor.printer_time_remaining.state | int %}
+        {% set hours = (time  / 3600) | int %}
+        {% set minutes = ((time % 3600) / 60) | int %}
+        {% set seconds = (time % 60) | int %}
+        {{ "{:02d}:{:02d}:{:02d}".format(hours|int, minutes|int, seconds|int) }}
+    printer_time_elapsed_formatted:
+      friendly_name: Time elapsed
+      value_template: >-
+        {% set time = states.sensor.printer_time_elapsed.state | int %}
+        {% set hours = (time  / 3600) | int %}
+        {% set minutes = ((time % 3600) / 60) | int %}
+        {% set seconds = (time % 60) | int %}
+        {{ "{:02d}:{:02d}:{:02d}".format(hours|int, minutes|int, seconds|int) }}
+    printer_status_combined:
+      friendly_name: Status
+      value_template: >-
+        {% if states.sensor.printer_state.state == "Printing" %}
+          {{states.sensor.printer_state.state}} ({{states.sensor.printer_job_percentage.state}}%)
+        {% elif states.sensor.printer_state.state == "unknown" %}
+          Offline
+        {% else %}
+          {{states.sensor.printer_state.state}}
+        {% endif %}
+    siim_location:
+      friendly_name: Siim
+      value_template: >-
+          {% if is_state("binary_sensor.siim_home", "on") %}
+          Home
+          {% elif is_state("binary_sensor.siim_work", "on") %}
+          Work
+          {% elif states("binary_sensor.siim_home") == "unknown" and states("binary_sensor.siim_work") == "unknown" %}
+          Unknown
+          {% else %}
+          Away
+          {% endif %}
+    pc_status:
+      friendly_name: Status
+      value_template: >-
+        {% if is_state('sensor.pc_cpu_usage', 'unavailable')%}
+        Off
+        {% else %}
+        {{ states("sensor.pc_power_status") }}
+        {% endif %}
+    laptop_status:
+      friendly_name: Status
+      value_template: >-
+        {% if is_state('sensor.laptop_cpu_usage', 'unavailable')%}
+        Off
+        {% else %}
+        {{ states("sensor.laptop_power_status") }}
+        {% endif %}
+
+################################################################################
+# History statistics
+################################################################################
+- platform: history_stats
+  name: Time in bedroom past week
+  entity_id: input_select.indoor_location
+  state: 'Bedroom'
+  type: time
+  duration:
+    days: 7
+  end: '{{ now() }}'
+- platform: history_stats
+  name: Time in bed past week
+  entity_id: input_select.indoor_location
+  state: 'Bed'
+  type: time
+  duration:
+    days: 7
+  end: '{{ now() }}'
+- platform: history_stats
+  name: Time in kitchen past week
+  entity_id: input_select.indoor_location
+  state: 'Kitchen'
+  type: time
+  duration:
+    days: 7
+  end: '{{ now() }}'
+- platform: history_stats
+  name: Time in bathroom past week
+  entity_id: input_select.indoor_location
+  state: 'Bathroom'
+  type: time
+  duration:
+    days: 7
+  end: '{{ now() }}'
+- platform: history_stats
+  name: Time in outside past week
+  entity_id: input_select.indoor_location
+  state: 'Outside'
+  type: time
+  duration:
+    days: 7
+  end: '{{ now() }}'
+- platform: history_stats
+  name: Time in work past week
+  entity_id: sensor.siim_location
+  state: 'Work'
+  type: time
+  duration:
+    days: 7
+  end: '{{ now() }}'
+
+- platform: history_stats_in_seconds
+  name: Plant 1 water usage past day
+  entity_id: switch.valve_1
+  state: 'on'
+  type: time
+  format: seconds
+  duration:
+    days: 1
+  end: '{{ now() }}'
+- platform: history_stats_in_seconds
+  name: Plant 2 water usage past day
+  entity_id: switch.valve_2
+  state: 'on'
+  type: time
+  format: seconds
+  duration:
+    days: 1
+  end: '{{ now() }}'
+- platform: history_stats_in_seconds
+  name: Plant 3 water usage past day
+  entity_id: switch.valve_3
+  state: 'on'
+  type: time
+  format: seconds
+  duration:
+    days: 1
+  end: '{{ now() }}'

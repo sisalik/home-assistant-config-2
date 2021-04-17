@@ -1,0 +1,219 @@
+hassio:
+
+homeassistant:
+  customize: !include customize.yaml
+  auth_providers:
+    - type: homeassistant
+
+# Enables the frontend
+frontend:
+    themes: !include_dir_merge_named themes
+
+# Mobile app support
+mobile_app:
+
+# Enables configuration UI
+config:
+
+# Enables the system health component
+system_health:
+
+# Enables the map view
+map:
+
+zone: !include zones.yaml
+
+http:
+  server_port: 443  # On Hassbian, need to run the following to allow binding to port 443: sudo setcap 'cap_net_bind_service=+ep' /usr/bin/python3.4
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+recorder:
+  db_url: !secret mariadb_url
+#   commit_interval: 5
+  exclude:
+    entities:
+      - sensor.printer_time_remaining_formatted
+      - sensor.printer_time_elapsed_formatted
+      - sensor.printer_status_combined
+
+influxdb:
+  host: a0d7b954-influxdb
+  port: 8086
+  database: homeassistant
+  username: !secret influxdb_username
+  password: !secret influxdb_password
+  max_retries: 3
+  default_measurement: state
+
+# View all events in a logbook
+logbook:
+
+# Track the sun
+sun:
+
+sensor: !include sensors.yaml
+
+binary_sensor:
+  - platform: mqtt
+    name: Desk motion sensor
+    state_topic: "stat/desk-controller/MOTION"
+    availability_topic: "tele/desk-controller/LWT"
+  - platform: mqtt
+    name: Wardrobe motion sensor
+    state_topic: "stat/rainbow/MOTION"
+    availability_topic: "tele/rainbow/LWT"
+  - platform: wyzesense
+    device: auto
+
+cover:
+  - platform: mqtt
+    name: PC volume
+    set_position_topic: "cmnd/kil-pc/VOLUME"
+    position_topic: "stat/kil-pc/VOLUME"
+    availability_topic: "tele/kil-pc/LWT"
+    position_open: 100
+    position_closed: 0
+  - platform: mqtt
+    name: Laptop volume
+    set_position_topic: "cmnd/kil-laptop/VOLUME"
+    position_topic: "stat/kil-laptop/VOLUME"
+    availability_topic: "tele/kil-laptop/LWT"
+    position_open: 100
+    position_closed: 0
+
+# Text to speech
+tts:
+  - platform: google_translate
+    service_name: google_say
+
+stream:
+
+camera:
+  - name: Printer
+    platform: generic
+    stream_source: !secret cam_printer_stream_url
+    still_image_url : !secret cam_printer_image_url
+    username: !secret cam_printer_username
+    password: !secret cam_printer_password
+    authentication: digest
+  - name: Street
+    platform: ffmpeg
+    input: !secret cam_street_url
+  - name: Kitchen
+    platform: ffmpeg
+    input: !secret cam_kitchen_url
+  - name: Plants
+    platform: ffmpeg
+    input: !secret cam_plants_url
+
+android_ip_webcam:
+  - host: !secret cam_bedroom_url
+    sensors:
+      - audio_connections
+      - battery_level
+      - battery_temp
+      - light
+      - pressure
+      - proximity
+      - sound
+      - video_connections
+
+mqtt:
+  broker: localhost
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+
+light: !include lights.yaml
+switch: !include switches.yaml
+
+input_boolean:
+input_text:
+input_number:
+input_datetime:
+input_select:
+
+timer:
+  printer_auto_start:
+    name: "Auto-start print"
+
+rest_command:
+  printer_select_file:
+    url: !secret octoprint_file_select_url
+    method: POST
+    headers:
+      X-Api-Key: !secret octoprint_api_key
+    payload: '{"command": "select", "print": "false"}'
+    content_type:  'application/json'
+
+notify:
+  - platform: joaoapps_join
+    api_key: !secret join_api_key
+    device_id: !secret join_device_id_7t
+    name: OnePlus 7T
+  - platform: joaoapps_join
+    api_key: !secret join_api_key
+    device_id: !secret join_device_id_3t
+    name: OnePlus 3T
+
+joaoapps_join:
+  - api_key: !secret join_api_key
+    device_id: !secret join_device_id_7t
+
+spotify:
+  client_id: !secret spotify_client_id
+  client_secret: !secret spotify_client_secret
+
+google_assistant:
+  project_id: !secret google_assistant_project_id
+  service_account: !include service_account.json
+  report_state: true
+  exposed_domains:
+    - switch
+    - input_boolean
+    - light
+    - script
+    - camera
+
+media_extractor:
+
+# Enable python scripts
+python_script:
+
+shell_command: !include shell_command.yaml
+
+panel_iframe:
+  tasmoadmin:
+    title: Tasmo Admin
+    icon: mdi:lightbulb-on
+    url: !secret tasmo_admin_url
+  appdaemon:
+    title: AppDaemon
+    icon: mdi:language-python
+    url: !secret appdaemon_admin_url
+
+# Community add-ons
+hacs:
+  token: !secret hacs_token
+
+spotcast:
+  sp_dc: !secret spotcast_sp_dc
+  sp_key: !secret spotcast_sp_key
+
+script: !include scripts.yaml
+automation: !include automations.yaml

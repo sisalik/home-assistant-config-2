@@ -1,0 +1,136 @@
+- platform: mqtt
+  name: "Desk lamp"
+  state_topic: "stat/desk-lamp/POWER"
+  command_topic: "cmnd/desk-lamp/POWER"
+  availability_topic: "tele/desk-lamp/LWT"
+  qos: 1
+  payload_on: "ON"
+  payload_off: "OFF"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  retain: false
+- platform: mqtt
+  name: "Kitchen lights"
+  state_topic: "stat/kitchen-lights/POWER"
+  command_topic: "cmnd/kitchen-lights/POWER"
+  availability_topic: "tele/kitchen-lights/LWT"
+  qos: 1
+  payload_on: "ON"
+  payload_off: "OFF"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  retain: false
+- platform: mqtt
+  name: "Mood light"
+  state_topic: "stat/sonoff-6B4165/POWER"
+  command_topic: "cmnd/sonoff-6B4165/POWER"
+  availability_topic: "tele/sonoff-6B4165/LWT"
+  qos: 1
+  payload_on: "ON"
+  payload_off: "OFF"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  retain: false
+- platform: mqtt
+  name: "Bedroom lights"
+  state_topic: "stat/tasmota_16E0AC/POWER"
+  command_topic: "cmnd/tasmota_16E0AC/POWER"
+  availability_topic: "tele/tasmota_16E0AC/LWT"
+  qos: 1
+  payload_on: "ON"
+  payload_off: "OFF"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  retain: false
+- platform: mqtt
+  name: "Fairy lights"
+  state_topic: "stat/sonoff-5743/POWER"
+  command_topic: "cmnd/sonoff-5743/POWER"
+  availability_topic: "tele/sonoff-5743/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  qos: 1
+  retain: false
+- platform: mqtt
+  name: "Worktop lights"
+  state_topic: "stat/sonoff-8D4FAD/POWER"
+  command_topic: "cmnd/sonoff-8D4FAD/POWER"
+  availability_topic: "tele/sonoff-8D4FAD/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  qos: 1
+  retain: false
+- platform: mqtt
+  name: "Bathroom lights"
+  state_topic: "stat/sonoff-00B6E9/POWER1"
+  command_topic: "cmnd/sonoff-00B6E9/POWER1"
+  availability_topic: "tele/sonoff-00B6E9/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  qos: 1
+  retain: false
+- platform: mqtt
+  name: "Bathroom LED"
+  state_topic: "stat/sonoff-00B6E9/POWER3"
+  command_topic: "cmnd/sonoff-00B6E9/POWER3"
+  availability_topic: "tele/sonoff-00B6E9/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  qos: 1
+  retain: false
+- platform: mqtt
+  name: "Green light"
+  state_topic: "stat/sonoff-6089/POWER"
+  command_topic: "cmnd/sonoff-6089/POWER"
+  availability_topic: "tele/sonoff-6089/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  qos: 1
+  retain: false
+- platform: mqtt
+  name: "Skylight"
+  state_topic: "stat/desk-controller/RELAY1"
+  command_topic: "cmnd/desk-controller/RELAY1"
+  availability_topic: "tele/desk-controller/LWT"
+  qos: 1
+  retain: false
+- platform: mqtt
+  name: "Red light"
+  state_topic: "stat/desk-controller/ONOFF"
+  command_topic: "cmnd/desk-controller/ONOFF"
+  brightness_command_topic: "cmnd/desk-controller/BRIGHTNESS"
+  brightness_state_topic: "stat/desk-controller/BRIGHTNESS"
+  brightness_scale: 1023
+  availability_topic: "tele/desk-controller/LWT"
+  qos: 1
+  retain: false
+- platform: mqtt
+  name: "Rainbow"
+  availability_topic: "tele/rainbow/LWT"
+  state_topic: "stat/rainbow/ONOFF"
+  command_topic: "cmnd/rainbow/ONOFF"
+  brightness_state_topic: "stat/rainbow/BRIGHTNESS"
+  brightness_command_topic: "cmnd/rainbow/BRIGHTNESS"
+  effect_list:
+    - Solid
+    - Solid rainbow
+    - Linear gradient
+    - Circular gradient
+    - Cyberpunk
+    - Strobe
+    - Tunnel
+    - Raw input
+  effect_state_topic: "stat/rainbow/EFFECT"
+  effect_command_topic: "cmnd/rainbow/EFFECT"
+  rgb_state_topic: "stat/rainbow/RGB"
+  rgb_command_topic: "cmnd/rainbow/RGB"
+  white_value_state_topic: "stat/rainbow/WHITE"
+  white_value_command_topic: "cmnd/rainbow/WHITE"
+  rgb_command_template: "{{ '{:03},{:03},{:03}'.format(red, green, blue) }}"
+  color_temp_state_topic: "stat/rainbow/TEMP"
+  color_temp_command_topic: "cmnd/rainbow/TEMP"
+  color_temp_value_template: "{{ (1000000/float(value)) | int }}"
+  color_temp_command_template: "{{ (1000000/float(value)) | int }}"
+  qos: 0
+  payload_on: "ON"
+  payload_off: "OFF"

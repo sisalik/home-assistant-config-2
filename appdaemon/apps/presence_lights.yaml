@@ -1,0 +1,73 @@
+presence_lights:
+  module: presence_lights
+  class: PresenceLightController
+  off_delay: 45
+  location_entity: input_select.indoor_location
+  rooms:
+    - name: Bedroom
+      motion_sensor: binary_sensor.desk_motion_sensor
+      light_sensor:
+        entity: sensor.desk_light_level
+        threshold: 35
+      lights:
+        - light.desk_lamp
+        - light.skylight
+        - light.bedroom_lights
+        - light.red_light
+        - entity: light.rainbow
+          on_brightness: 50
+    - name: Bed
+      motion_sensor: binary_sensor.wyzesense_7780209d
+      light_sensor:
+        entity: sun.sun
+      lights:
+        - light.red_light
+        - entity: light.rainbow
+          on_brightness: 50
+    - name: Bathroom
+      motion_sensor: binary_sensor.wyzesense_7781864c
+      light_sensor:
+        entity: sensor.kitchen_light_level
+        threshold: 50
+      lights:
+        - light.bathroom_lights
+        - light.bathroom_led
+        - entity: light.rainbow
+          on_brightness: 255
+    - name: Kitchen
+      motion_sensor: binary_sensor.wyzesense_77860e71
+      light_sensor:
+        entity: sensor.kitchen_light_level
+        threshold: 50
+      lights:
+        - light.kitchen_lights
+        - light.worktop_lights
+        - light.mood_light
+        - light.fairy_lights
+        - light.green_light
+  scenes:
+    - name: "Off"
+      enabled: []
+    - name: "Stock"
+      enabled:
+        - light.bathroom_lights
+    - name: "Low"
+      enabled:
+        - light.red_light
+        - light.bathroom_led
+        - light.mood_light
+        - light.fairy_lights
+    - name: "Active"
+      enabled:
+        - light.desk_lamp
+        - light.skylight
+        - light.bathroom_lights
+        - light.worktop_lights
+    - name: "Max"
+      enabled:
+        - light.desk_lamp
+        - light.skylight
+        - light.bedroom_lights
+        - light.bathroom_lights
+        - light.worktop_lights
+        - light.kitchen_lights
