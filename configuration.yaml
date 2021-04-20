@@ -4,6 +4,8 @@ homeassistant:
   customize: !include customize.yaml
   auth_providers:
     - type: homeassistant
+  allowlist_external_dirs:
+    - /config/.storage
 
 # Enables the frontend
 frontend:
@@ -194,6 +196,9 @@ media_extractor:
 
 # Enable python scripts
 python_script:
+
+folder_watcher:
+  - folder: /config/.storage
 
 shell_command: !include shell_command.yaml
 

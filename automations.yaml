@@ -1342,3 +1342,15 @@
   - data: {}
     service: script.start_print
   mode: single
+- id: '1618948315679'
+  alias: Convert Lovelace configuration to YAML
+  description: ''
+  trigger:
+  - platform: event
+    event_type: folder_watcher
+    event_data:
+      event_type: modified
+  condition: []
+  action:
+  - service: shell_command.llconvert
+  mode: single

@@ -1,0 +1,1476 @@
+background: var(--background-image)
+cch:
+  hide_help: true
+  swipe: true
+  swipe_animate: swipe
+  voice: hide
+custom_header:
+  chevrons: false
+  compact_mode: true
+  editor_warnings: false
+  voice_dropdown: true
+  voice_hide: true
+title: Home
+views:
+- badges: []
+  cards:
+  - entities:
+    - card_type: glance
+      entities:
+      - double_tap_action:
+          action: call-service
+          service: script.ad_presence_light_controller
+          service_data:
+            method: reset_room
+        entity: switch.off_light_mode
+        show_state: false
+        tap_action:
+          action: toggle
+      - double_tap_action:
+          action: call-service
+          service: script.ad_presence_light_controller
+          service_data:
+            method: reset_room
+        entity: switch.low_light_mode
+        show_state: false
+        tap_action:
+          action: toggle
+      - double_tap_action:
+          action: call-service
+          service: script.ad_presence_light_controller
+          service_data:
+            method: reset_room
+        entity: switch.stock_light_mode
+        show_state: false
+        tap_action:
+          action: toggle
+      - double_tap_action:
+          action: call-service
+          service: script.ad_presence_light_controller
+          service_data:
+            method: reset_room
+        entity: switch.active_light_mode
+        show_state: false
+        tap_action:
+          action: toggle
+      - double_tap_action:
+          action: call-service
+          service: script.ad_presence_light_controller
+          service_data:
+            method: reset_room
+        entity: switch.max_light_mode
+        show_state: false
+        tap_action:
+          action: toggle
+      style:
+        .: "ha-card {\n  box-shadow: none;\n}\ndiv.entity {\n  margin: 0;\n}\n"
+        .entity:
+          $: "state-badge {\n  margin: 0;\n}\n"
+      type: custom:hui-element
+    - entity: sensor.siim_location
+      icon: mdi:map-marker-radius
+    - entity: binary_sensor.siim_s_phone_interactive
+    - entities:
+      - icon: mdi:phone
+        tap_action:
+          action: call-service
+          service: script.palantir_start_call
+      - icon: mdi:phone-cancel
+        tap_action:
+          action: call-service
+          service: script.palantir_end_call
+      - entity: sensor.palantir_call_state
+        name: Call
+      - entity: sensor.palantir_red
+        name: Red
+      entity: sensor.palantir_green
+      name: Palantir
+      state_header: Green
+      type: custom:multiple-entity-row
+      value_label: Green
+    - entities:
+      - entity: input_select.indoor_location
+        name: false
+      entity: input_boolean.indoor_tracking
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - icon: mdi:monitor-off
+        tap_action:
+          action: call-service
+          service: script.1578964535898
+      - icon: mdi:power-sleep
+        tap_action:
+          action: call-service
+          service: script.1578964943495
+      entity: sensor.pc_status
+      icon: mdi:desktop-classic
+      name: PC
+      type: custom:multiple-entity-row
+    - entities:
+      - icon: mdi:monitor-off
+        tap_action:
+          action: call-service
+          service: script.1578964984998
+      - icon: mdi:power-sleep
+        tap_action:
+          action: call-service
+          service: script.1578965002430
+      entity: sensor.laptop_status
+      icon: mdi:laptop
+      name: Laptop
+      type: custom:multiple-entity-row
+    - entities:
+      - icon: mdi:weather-night
+        tap_action:
+          action: call-service
+          service: frontend.set_theme
+          service_data:
+            name: clear-dark
+      - icon: mdi:weather-sunny
+        tap_action:
+          action: call-service
+          service: frontend.set_theme
+          service_data:
+            name: clear
+      - icon: mdi:restart
+        tap_action:
+          action: call-service
+          confirmation:
+            text: Are you sure you want to restart Home Assistant?
+          service: homeassistant.restart
+      entity: sensor.uptime
+      format: total
+      icon: mdi:home
+      name: Home Assistant
+      type: custom:multiple-entity-row
+    show_header_toggle: false
+    title: General
+    type: entities
+  - entities:
+    - entities:
+      - entity: input_boolean.auto_desk_lamp
+        name: Auto
+        toggle: true
+      entity: light.desk_lamp
+      name: Desk lamp
+      state_header: Power
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_boolean.auto_bedroom_lights
+        name: false
+        toggle: true
+      entity: light.bedroom_lights
+      name: Ceiling lights
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_boolean.auto_red_light
+        name: false
+        toggle: true
+      entity: light.red_light
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_boolean.auto_skylight
+        name: false
+        toggle: true
+      entity: light.skylight
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_boolean.auto_rainbow
+        name: false
+        toggle: true
+      entity: light.rainbow
+      icon: mdi:looks
+      toggle: true
+      type: custom:multiple-entity-row
+    - entity: switch.bedroom_fan
+      icon: mdi:fan
+      name: Fan
+      toggle: true
+    - entities:
+      - entity: sensor.printer_status_combined
+        name: false
+      - icon: mdi:auto-upload
+        tap_action:
+          action: call-service
+          service: script.warm_up_printer
+      entity: switch.printer_power
+      icon: mdi:printer-3d
+      name: 3D printer
+      toggle: true
+      type: custom:multiple-entity-row
+    - type: section
+    - entities:
+      - entity: binary_sensor.wyzesense_7780209d
+        name: Bed
+      - entity: binary_sensor.wardrobe_motion_sensor
+        name: Wardrobe
+      entity: binary_sensor.desk_motion_sensor
+      name: Motion
+      state_header: Desk
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: sensor.bedroom_temperature_floor
+        name: Floor
+      entity: sensor.bedroom_temperature_bed
+      name: Temperatures
+      state_header: Ceiling
+      type: custom:multiple-entity-row
+    - entity: sensor.desk_light_level
+      name: Light level
+    show_header_toggle: true
+    title: Bedroom
+    type: entities
+  - entities:
+    - entities:
+      - entity: input_boolean.auto_bathroom_lights
+        name: Auto
+        toggle: true
+      entity: light.bathroom_lights
+      name: Lights
+      state_header: Power
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_boolean.auto_bathroom_led
+        name: false
+        toggle: true
+      entity: light.bathroom_led
+      name: LED
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: switch.bathroom_fan_auto
+        name: false
+        toggle: true
+      entity: switch.bathroom_fan
+      name: Fan
+      toggle: true
+      type: custom:multiple-entity-row
+    - type: section
+    - entity: binary_sensor.wyzesense_7781864c
+      name: Motion
+    - entity: binary_sensor.wyzesense_7786890a
+      name: Door
+    - entities:
+      - entity: sensor.bathroom_temperature
+        name: Temperature
+      - entity: sensor.bathroom_humidity
+        name: Humidity
+      entity: sensor.bathroom_mould_probability
+      icon: mdi:weather-partly-snowy-rainy
+      name: Conditions
+      state_header: Mould
+      type: custom:multiple-entity-row
+    title: Bathroom
+    type: entities
+  - entities:
+    - action_name: Activate
+      entity: script.work_mode
+    - action_name: Transfer
+      entity: script.1574903008794
+      icon: mdi:spotify
+    - entities:
+      - entity: input_boolean.auto_worktop_lights
+        name: Auto
+        toggle: true
+      entity: light.worktop_lights
+      name: Worktop lights
+      state_header: Power
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_boolean.auto_mood_light
+        name: false
+        toggle: true
+      entity: light.mood_light
+      name: Mood light
+      state_header: null
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_boolean.auto_green_light
+        name: false
+        toggle: true
+      entity: light.green_light
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_boolean.auto_kitchen_lights
+        name: false
+        toggle: true
+      entity: light.kitchen_lights
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_boolean.auto_fairy_lights
+        name: false
+        toggle: true
+      entity: light.fairy_lights
+      toggle: true
+      type: custom:multiple-entity-row
+    - entity: switch.tv_and_receiver
+    - entity: switch.kitchen_psu
+      name: PSU
+    - type: section
+    - entity: binary_sensor.wyzesense_77860e71
+      name: Motion
+    - entity: binary_sensor.wyzesense_777f8f54
+    - entities:
+      - entity: sensor.kitchen_temperature_floor
+        name: Floor
+      entity: sensor.kitchen_temperature_worktop
+      name: Temperatures
+      state_header: Worktop
+      type: custom:multiple-entity-row
+    - entity: sensor.kitchen_light_level
+      name: Light level
+    show_header_toggle: true
+    title: Kitchen
+    type: entities
+  - aspect_ratio: 50%
+    camera_image: camera.ip_webcam
+    entity: camera.ip_webcam
+    image: https://www.home-assistant.io/images/merchandise/shirt-frontpage.png
+    name: Bedroom
+    type: picture-entity
+  - aspect_ratio: 50%
+    camera_image: camera.kitchen
+    entity: camera.kitchen
+    type: picture-entity
+  - aspect_ratio: 50%
+    camera_image: camera.plants
+    entity: camera.plants
+    name: Kitchen 2
+    type: picture-entity
+  - aspect_ratio: 50%
+    camera_image: camera.street
+    entity: camera.street
+    type: picture-entity
+  icon: mdi:home-outline
+  path: default_view
+  title: Home
+- badges: []
+  cards:
+  - card:
+      entities:
+      - entities:
+        - entity: input_boolean.auto_desk_lamp
+          name: Auto
+          toggle: true
+        entity: light.desk_lamp
+        name: Desk lamp
+        state_header: Power
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_bedroom_lights
+          name: false
+          toggle: true
+        entity: light.bedroom_lights
+        name: Ceiling lights
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_red_light
+          name: false
+          toggle: true
+        entity: light.red_light
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_skylight
+          name: false
+          toggle: true
+        entity: light.skylight
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_rainbow
+          name: false
+          toggle: true
+        entity: light.rainbow
+        icon: mdi:looks
+        toggle: true
+        type: custom:multiple-entity-row
+      - entity: switch.bedroom_fan
+        icon: mdi:fan
+        name: Fan
+        toggle: true
+      - entities:
+        - entity: sensor.printer_status_combined
+          name: false
+        - icon: mdi:auto-upload
+          tap_action:
+            action: call-service
+            service: script.warm_up_printer
+        entity: switch.printer_power
+        icon: mdi:printer-3d
+        name: 3D printer
+        toggle: true
+        type: custom:multiple-entity-row
+      - type: section
+      - entities:
+        - entity: binary_sensor.wyzesense_7780209d
+          name: Bed
+        - entity: binary_sensor.wardrobe_motion_sensor
+          name: Wardrobe
+        entity: binary_sensor.desk_motion_sensor
+        name: Motion
+        state_header: Desk
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: sensor.bedroom_temperature_floor
+          name: Floor
+        entity: sensor.bedroom_temperature_bed
+        name: Temperatures
+        state_header: Ceiling
+        type: custom:multiple-entity-row
+      - entity: sensor.desk_light_level
+        name: Light level
+      show_header_toggle: true
+      title: Bedroom
+      type: entities
+    conditions:
+    - entity: input_select.indoor_location
+      state: Bedroom
+    type: conditional
+  - card:
+      entities:
+      - entities:
+        - entity: input_boolean.auto_desk_lamp
+          name: Auto
+          toggle: true
+        entity: light.desk_lamp
+        name: Desk lamp
+        state_header: Power
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_bedroom_lights
+          name: false
+          toggle: true
+        entity: light.bedroom_lights
+        name: Ceiling lights
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_red_light
+          name: false
+          toggle: true
+        entity: light.red_light
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_skylight
+          name: false
+          toggle: true
+        entity: light.skylight
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_rainbow
+          name: false
+          toggle: true
+        entity: light.rainbow
+        icon: mdi:looks
+        toggle: true
+        type: custom:multiple-entity-row
+      - entity: switch.bedroom_fan
+        icon: mdi:fan
+        name: Fan
+        toggle: true
+      - entities:
+        - entity: sensor.printer_status_combined
+          name: false
+        - icon: mdi:auto-upload
+          tap_action:
+            action: call-service
+            service: script.warm_up_printer
+        entity: switch.printer_power
+        icon: mdi:printer-3d
+        name: 3D printer
+        toggle: true
+        type: custom:multiple-entity-row
+      - type: section
+      - entities:
+        - entity: binary_sensor.wyzesense_7780209d
+          name: Bed
+        - entity: binary_sensor.wardrobe_motion_sensor
+          name: Wardrobe
+        entity: binary_sensor.desk_motion_sensor
+        name: Motion
+        state_header: Desk
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: sensor.bedroom_temperature_floor
+          name: Floor
+        entity: sensor.bedroom_temperature_bed
+        name: Temperatures
+        state_header: Ceiling
+        type: custom:multiple-entity-row
+      - entity: sensor.desk_light_level
+        name: Light level
+      show_header_toggle: true
+      title: Bedroom
+      type: entities
+    conditions:
+    - entity: input_select.indoor_location
+      state: Bed
+    type: conditional
+  - card:
+      entities:
+      - entities:
+        - entity: input_boolean.auto_bathroom_lights
+          name: Auto
+          toggle: true
+        entity: light.bathroom_lights
+        name: Lights
+        state_header: Power
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_bathroom_led
+          name: false
+          toggle: true
+        entity: light.bathroom_led
+        name: LED
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: switch.bathroom_fan_auto
+          name: false
+          toggle: true
+        entity: switch.bathroom_fan
+        name: Fan
+        toggle: true
+        type: custom:multiple-entity-row
+      - type: section
+      - entity: binary_sensor.wyzesense_7781864c
+        name: Motion
+      - entity: binary_sensor.wyzesense_7786890a
+        name: Door
+      - entities:
+        - entity: sensor.bathroom_temperature
+          name: Temperature
+        - entity: sensor.bathroom_humidity
+          name: Humidity
+        entity: sensor.bathroom_mould_probability
+        icon: mdi:weather-partly-snowy-rainy
+        name: Conditions
+        state_header: Mould
+        type: custom:multiple-entity-row
+      title: Bathroom
+      type: entities
+    conditions:
+    - entity: input_select.indoor_location
+      state: Bathroom
+    type: conditional
+  - card:
+      entities:
+      - action_name: Activate
+        entity: script.work_mode
+      - action_name: Transfer
+        entity: script.1574903008794
+        icon: mdi:spotify
+      - entities:
+        - entity: input_boolean.auto_worktop_lights
+          name: Auto
+          toggle: true
+        entity: light.worktop_lights
+        name: Worktop lights
+        state_header: Power
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_mood_light
+          name: false
+          toggle: true
+        entity: light.mood_light
+        name: Mood light
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_green_light
+          name: false
+          toggle: true
+        entity: light.green_light
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_kitchen_lights
+          name: false
+          toggle: true
+        entity: light.kitchen_lights
+        toggle: true
+        type: custom:multiple-entity-row
+      - entities:
+        - entity: input_boolean.auto_fairy_lights
+          name: false
+          toggle: true
+        entity: light.fairy_lights
+        toggle: true
+        type: custom:multiple-entity-row
+      - entity: switch.tv_and_receiver
+      - entity: switch.kitchen_psu
+        name: PSU
+      - type: section
+      - entity: binary_sensor.wyzesense_77860e71
+        name: Motion
+      - entity: binary_sensor.wyzesense_777f8f54
+      - entities:
+        - entity: sensor.kitchen_temperature_floor
+          name: Floor
+        entity: sensor.kitchen_temperature_worktop
+        name: Temperatures
+        state_header: Worktop
+        type: custom:multiple-entity-row
+      - entity: sensor.kitchen_light_level
+        name: Light level
+      show_header_toggle: true
+      title: Kitchen
+      type: entities
+    conditions:
+    - entity: input_select.indoor_location
+      state: Kitchen
+    type: conditional
+  icon: mdi:floor-plan
+  path: current-room
+  title: Current room
+- badges: []
+  cards:
+  - entities:
+    - entities:
+      - entity: automation.chromecast_startup
+        name: Auto
+        toggle: true
+      - entity: switch.tv_screen
+        name: Screen
+        toggle: true
+      entity: switch.tv_power
+      name: Power
+      secondary_info: last-changed
+      state_header: Power
+      toggle: true
+      type: custom:multiple-entity-row
+    - entity: switch.kitchen_socket
+      name: Receiver
+    - entities:
+      - icon: mdi:google-chrome
+        service: script.1566150135518
+      - icon: mdi:laptop
+        service: script.1566150148884
+      entity: script.1566150135518
+      icon: mdi:video-input-component
+      name: Input
+      show_state: false
+      type: custom:multiple-entity-row
+    - type: section
+    - entity: script.1574903008794
+      icon: mdi:spotify
+    - entity: media_player.tv
+      full_row: true
+      type: custom:slider-entity-row
+    title: TV
+    type: entities
+  - entity: media_player.tv
+    type: media-control
+  - entity: media_player.spotify_kiluke
+    type: media-control
+  - client_id: be7b63e18bb442978f3f33e10ac48af5
+    default_device: TV
+    device: TV
+    limit: 10
+    player: TV
+    playlist_type: default
+    spotify_entity: media_player.spotify_kiluke
+    type: custom:spotify-card
+  icon: mdi:speaker
+  path: media
+  title: Media
+- badges: []
+  cards:
+  - entities:
+    - entities:
+      - icon: mdi:monitor-off
+        tap_action:
+          action: call-service
+          service: script.1578964535898
+      - icon: mdi:power-sleep
+        tap_action:
+          action: call-service
+          service: script.1578964943495
+      - icon: mdi:snowflake
+        tap_action:
+          action: call-service
+          service: script.1578964963007
+      entity: sensor.pc_status
+      icon: mdi:desktop-classic
+      name: Status
+      secondary_info: last-changed
+      type: custom:multiple-entity-row
+    - entity: sensor.pc_cpu_usage
+      name: CPU usage
+    - entity: sensor.pc_memory_usage
+      name: Memory usage
+    - entities:
+      - entity: sensor.pc_download_speed
+        name: Download
+      entity: sensor.pc_upload_speed
+      name: Network
+      state_header: Upload
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: sensor.pc_idle_time
+        name: Idle
+      entity: sensor.pc_uptime
+      name: Time
+      state_header: Since boot
+      type: custom:multiple-entity-row
+    - entity: cover.pc_volume
+      icon: mdi:volume-high
+      max: 100
+      min: 0
+      name: Volume
+      step: 1
+      type: custom:slider-entity-row
+    - entities:
+      - icon: mdi:skip-previous
+        tap_action:
+          action: call-service
+          service: mqtt.publish
+          service_data:
+            payload: PREV
+            topic: cmnd/kil-pc/MEDIA
+      - icon: mdi:play-pause
+        tap_action:
+          action: call-service
+          service: mqtt.publish
+          service_data:
+            payload: PLAY-PAUSE
+            topic: cmnd/kil-pc/MEDIA
+      - icon: mdi:stop
+        tap_action:
+          action: call-service
+          service: mqtt.publish
+          service_data:
+            payload: STOP
+            topic: cmnd/kil-pc/MEDIA
+      - icon: mdi:skip-next
+        tap_action:
+          action: call-service
+          service: mqtt.publish
+          service_data:
+            payload: NEXT
+            topic: cmnd/kil-pc/MEDIA
+      entity: cover.pc_volume
+      icon: mdi:music
+      name: Media
+      show_state: false
+      type: custom:multiple-entity-row
+    show_header_toggle: false
+    title: PC
+    type: entities
+  - entities:
+    - entities:
+      - icon: mdi:monitor-off
+        tap_action:
+          action: call-service
+          service: script.1578964984998
+      - icon: mdi:power-sleep
+        tap_action:
+          action: call-service
+          service: script.1578965002430
+      - icon: mdi:snowflake
+        tap_action:
+          action: call-service
+          service: script.1578965027840
+      entity: sensor.laptop_status
+      icon: mdi:laptop
+      name: Status
+      secondary_info: last-changed
+      type: custom:multiple-entity-row
+    - entity: sensor.laptop_cpu_usage
+      name: CPU usage
+    - entity: sensor.laptop_memory_usage
+      name: Memory usage
+    - entities:
+      - entity: sensor.laptop_download_speed
+        name: Download
+      entity: sensor.laptop_upload_speed
+      name: Network
+      state_header: Upload
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: sensor.laptop_idle_time
+        name: Idle
+      entity: sensor.laptop_uptime
+      name: Time
+      state_header: Since boot
+      type: custom:multiple-entity-row
+    - entity: cover.laptop_volume
+      icon: mdi:volume-high
+      max: 100
+      min: 0
+      name: Volume
+      step: 1
+      type: custom:slider-entity-row
+    - entities:
+      - icon: mdi:skip-previous
+        tap_action:
+          action: call-service
+          service: mqtt.publish
+          service_data:
+            payload: PREV
+            topic: cmnd/kil-laptop/MEDIA
+      - icon: mdi:play-pause
+        tap_action:
+          action: call-service
+          service: mqtt.publish
+          service_data:
+            payload: PLAY-PAUSE
+            topic: cmnd/kil-laptop/MEDIA
+      - icon: mdi:stop
+        tap_action:
+          action: call-service
+          service: mqtt.publish
+          service_data:
+            payload: STOP
+            topic: cmnd/kil-laptop/MEDIA
+      - icon: mdi:skip-next
+        tap_action:
+          action: call-service
+          service: mqtt.publish
+          service_data:
+            payload: NEXT
+            topic: cmnd/kil-laptop/MEDIA
+      entity: cover.pc_volume
+      icon: mdi:music
+      name: Media
+      show_state: false
+      type: custom:multiple-entity-row
+    show_header_toggle: false
+    title: Laptop
+    type: entities
+  - entities:
+    - entity: device_tracker.hd1900
+    - entity: sensor.battery_level
+    - entity: sensor.hd1900_battery_state
+    - entity: sensor.wifi_connection
+    - entity: sensor.siim_s_phone_current_time_zone
+    - entity: binary_sensor.siim_s_phone_interactive
+    - entity: sensor.siim_s_phone_steps_sensor
+    - entity: sensor.hd1900_next_alarm
+    title: Phone
+    type: entities
+  icon: mdi:devices
+  path: devices
+  title: Devices
+- badges: []
+  cards:
+  - entities:
+    - entity: switch.printer_power
+      name: Power
+      secondary_info: last-changed
+    - entity: automation.shut_down_when_done
+      name: Shut down when done
+    - entity: automation.keep_warm
+      name: Keep warm after print
+    - script.warm_up_printer
+    - type: section
+    - entities:
+      - icon: mdi:play
+        tap_action:
+          action: call-service
+          service: script.start_print
+      - icon: mdi:play-pause
+        tap_action:
+          action: call-service
+          service: script.pause_print
+      - icon: mdi:stop
+        tap_action:
+          action: call-service
+          service: script.cancel_print
+      - icon: mdi:restart
+        tap_action:
+          action: call-service
+          confirmation:
+            text: Are you sure you want to restart Home Assistant?
+          service: script.1589306354303
+      entity: sensor.printer_state
+      name: Status
+      type: custom:multiple-entity-row
+    - conditions:
+      - entity: switch.printer_power
+        state: 'on'
+      row:
+        entity: sensor.printer_job_name
+        name: File
+      type: conditional
+    - conditions:
+      - entity: switch.printer_power
+        state: 'on'
+      row:
+        entities:
+        - entity: sensor.printer_job_percentage
+          name: Done
+        - entity: sensor.printer_time_elapsed_formatted
+          name: Elapsed
+        entity: sensor.printer_time_remaining_formatted
+        icon: mdi:clock-outline
+        name: Progress
+        state_header: Remaining
+        type: custom:multiple-entity-row
+      type: conditional
+    - conditions:
+      - entity: switch.printer_power
+        state: 'on'
+      row:
+        entities:
+        - entity: sensor.printer_tool_temperature_target
+          name: Target
+        entity: sensor.printer_tool_temperature_actual
+        name: Extruder temperature
+        state_header: Actual
+        type: custom:multiple-entity-row
+      type: conditional
+    - conditions:
+      - entity: switch.printer_power
+        state: 'on'
+      row:
+        entities:
+        - entity: sensor.printer_bed_temperature_target
+          name: Target
+        entity: sensor.printer_bed_temperature_actual
+        name: Bed temperature
+        state_header: Actual
+        type: custom:multiple-entity-row
+      type: conditional
+    - type: section
+    - icon: mdi:printer-3d
+      name: Octoprint
+      type: weblink
+      url: http://192.168.1.110/
+    - icon: mdi:webcam
+      name: Webcam
+      type: weblink
+      url: http://192.168.1.113/mjpeg/stream.cgi?chn=0
+    show_header_toggle: false
+    title: 3D printer
+    type: entities
+  - entities:
+    - attribute: duration
+      entities:
+      - icon: mdi:play
+        tap_action:
+          action: call-service
+          service: script.printer_start_auto_print_timer
+      - icon: mdi:play-pause
+        tap_action:
+          action: call-service
+          service: timer.pause
+          service_data:
+            entity_id: timer.printer_auto_start
+      - icon: mdi:stop
+        tap_action:
+          action: call-service
+          service: timer.cancel
+          service_data:
+            entity_id: timer.printer_auto_start
+      - icon: mdi:skip-forward
+        tap_action:
+          action: call-service
+          service: timer.finish
+          service_data:
+            entity_id: timer.printer_auto_start
+      entity: timer.printer_auto_start
+      name: Timer control
+      show_state: false
+      type: custom:multiple-entity-row
+    - conditions:
+      - entity: timer.printer_auto_start
+        state: active
+      row:
+        entity: timer.printer_auto_start
+        icon: mdi:timer-sand-full
+        name: Time remaining
+      type: conditional
+    - conditions:
+      - entity: timer.printer_auto_start
+        state: idle
+      row:
+        entity: input_datetime.printer_auto_start_delay
+        icon: mdi:timer-sand-empty
+        name: Delay
+      type: conditional
+    - entity: input_text.printer_auto_start_filename
+      name: File name
+    title: Scheduler
+    type: entities
+  - aspect_ratio: 50%
+    entity: camera.printer
+    type: picture-entity
+  icon: mdi:printer-3d
+  path: printer
+  title: Printer
+- badges: []
+  cards:
+  - entities:
+    - entities:
+      - entity: input_number.plant_1_humidity_setpoint
+        name: SP
+      - entity: sensor.plant_1_soil_humidity
+        name: PV
+      entity: automation.gardener_auto_water_plant_1
+      name: Plant 1
+      secondary_info: last-changed
+      state_header: Auto water
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_number.plant_2_humidity_setpoint
+        name: false
+      - entity: sensor.plant_2_soil_humidity
+        name: false
+      entity: automation.gardener_auto_water_plant_2
+      name: Plant 2
+      secondary_info: last-changed
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_number.plant_3_humidity_setpoint
+        name: false
+      - entity: sensor.plant_3_soil_humidity
+        name: false
+      entity: automation.gardener_auto_water_plant_3
+      name: Plant 3
+      secondary_info: last-changed
+      toggle: true
+      type: custom:multiple-entity-row
+    - type: section
+    - entities:
+      - entity: input_number.plant_1_watering_duration
+        name: Duration
+      - entity: script.1576883219746
+        name: Trigger
+        toggle: true
+      entity: switch.valve_1
+      secondary_info: last-changed
+      state_header: Toggle
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_number.plant_2_watering_duration
+        name: false
+      - entity: script.1576883632201
+        name: false
+        toggle: true
+      entity: switch.valve_2
+      secondary_info: last-changed
+      toggle: true
+      type: custom:multiple-entity-row
+    - entities:
+      - entity: input_number.plant_3_watering_duration
+        name: false
+      - entity: script.1576883668034
+        name: false
+        toggle: true
+      entity: switch.valve_3
+      secondary_info: last-changed
+      toggle: true
+      type: custom:multiple-entity-row
+    show_header_toggle: false
+    title: The Gardener
+    type: entities
+  - entities:
+    - entity: sensor.plant_1_soil_humidity
+      name: Plant 1
+    - entity: sensor.plant_2_soil_humidity
+      name: Plant 2
+    - entity: sensor.plant_3_soil_humidity
+      name: Plant 3
+    hours_to_show: 1
+    refresh_interval: 10
+    title: Soil humidity (past hour)
+    type: history-graph
+  - entities:
+    - entity: sensor.plant_1_soil_humidity
+      name: Plant 1
+    - entity: sensor.plant_2_soil_humidity
+      name: Plant 2
+    - entity: sensor.plant_3_soil_humidity
+      name: Plant 3
+    hours_to_show: 168
+    refresh_interval: 60
+    title: Soil humidity (past week)
+    type: history-graph
+  - entities:
+    - entity: sensor.plant_1_water_usage_past_day
+      name: Plant 1
+    - entity: sensor.plant_2_water_usage_past_day
+      name: Plant 2
+    - entity: sensor.plant_3_water_usage_past_day
+      name: Plant 3
+    hours_to_show: 168
+    refresh_interval: 60
+    title: Water usage (past day)
+    type: history-graph
+  icon: mdi:flower-outline
+  path: the-gardener
+  title: The Gardener
+- badges: []
+  cards:
+  - entity_apparent_temp: sensor.dark_sky_apparent_temperature
+    entity_current_conditions: sensor.dark_sky_icon
+    entity_daily_summary: sensor.dark_sky_daily_summary
+    entity_daytime_high: sensor.dark_sky_daytime_high_temperature_0d
+    entity_forecast_high_temp_1: sensor.dark_sky_daytime_high_temperature_1d
+    entity_forecast_high_temp_2: sensor.dark_sky_daytime_high_temperature_2d
+    entity_forecast_high_temp_3: sensor.dark_sky_daytime_high_temperature_3d
+    entity_forecast_high_temp_4: sensor.dark_sky_daytime_high_temperature_4d
+    entity_forecast_high_temp_5: sensor.dark_sky_daytime_high_temperature_5d
+    entity_forecast_icon_1: sensor.dark_sky_icon_1d
+    entity_forecast_icon_2: sensor.dark_sky_icon_2d
+    entity_forecast_icon_3: sensor.dark_sky_icon_3d
+    entity_forecast_icon_4: sensor.dark_sky_icon_4d
+    entity_forecast_icon_5: sensor.dark_sky_icon_5d
+    entity_forecast_low_temp_1: sensor.dark_sky_overnight_low_temperature_0d
+    entity_forecast_low_temp_2: sensor.dark_sky_overnight_low_temperature_1d
+    entity_forecast_low_temp_3: sensor.dark_sky_overnight_low_temperature_2d
+    entity_forecast_low_temp_4: sensor.dark_sky_overnight_low_temperature_3d
+    entity_forecast_low_temp_5: sensor.dark_sky_overnight_low_temperature_4d
+    entity_humidity: sensor.dark_sky_humidity
+    entity_pop: sensor.dark_sky_precip_probability
+    entity_pop_1: sensor.dark_sky_precip_probability_1d
+    entity_pop_2: sensor.dark_sky_precip_probability_2d
+    entity_pop_3: sensor.dark_sky_precip_probability_3d
+    entity_pop_4: sensor.dark_sky_precip_probability_4d
+    entity_pop_5: sensor.dark_sky_precip_probability_5d
+    entity_pop_intensity: sensor.dark_sky_precip_intensity
+    entity_pressure: sensor.dark_sky_pressure
+    entity_summary_1: sensor.dark_sky_summary_1d
+    entity_summary_2: sensor.dark_sky_summary_2d
+    entity_summary_3: sensor.dark_sky_summary_3d
+    entity_summary_4: sensor.dark_sky_summary_4d
+    entity_summary_5: sensor.dark_sky_summary_5d
+    entity_sun: sun.sun
+    entity_temperature: sensor.dark_sky_temperature
+    entity_visibility: sensor.dark_sky_visibility
+    entity_wind_bearing: sensor.dark_sky_wind_bearing
+    entity_wind_speed: sensor.dark_sky_wind_speed
+    type: custom:dark-sky-weather-card
+  - entities:
+    - entity: sensor.dark_sky_precip_probability
+    hours_to_show: 24
+    refresh_interval: 0
+    type: history-graph
+  - entities:
+    - entity: sensor.bedroom_temperature_floor
+      name: Bedroom (floor)
+    - entity: sensor.bedroom_temperature_floor_2
+      name: Bedroom (floor 2)
+    - entity: sensor.bedroom_temperature_bed
+      name: Bedroom (ceiling)
+    - entity: sensor.kitchen_temperature
+      name: Kitchen (floor)
+    - entity: sensor.kitchen_temperature_worktop
+      name: Kitchen (worktop)
+    - entity: sensor.bathroom_temperature
+    - entity: sensor.dark_sky_temperature
+      name: Outside (forecast)
+    hours_to_show: 24
+    refresh_interval: 0
+    type: history-graph
+  - entities:
+    - entity: sensor.bedroom_humidity_floor
+      name: Bedroom (floor)
+    - entity: sensor.bedroom_humidity_floor_2
+      name: Bedroom (floor 2)
+    - entity: sensor.bedroom_humidity_bed
+      name: Bedroom (ceiling)
+    - entity: sensor.kitchen_humidity
+      name: Kitchen (floor)
+    - entity: sensor.kitchen_humidity_worktop
+      name: Kitchen (worktop)
+    - entity: sensor.bathroom_humidity
+    - entity: sensor.dark_sky_humidity
+      name: Outside (forecast)
+    hours_to_show: 24
+    refresh_interval: 0
+    type: history-graph
+  icon: mdi:weather-cloudy
+  path: environment
+  title: Environment
+- badges: []
+  cards:
+  - entities:
+    - color: var(--disabled-text-color)
+      entity: sensor.time_in_bedroom_past_week
+      entity_row: true
+      max: 168
+      name: Desk
+      positions:
+        indicator: 'off'
+        minmax: 'off'
+      type: custom:bar-card
+    - color: var(--disabled-text-color)
+      entity: sensor.time_in_bed_past_week
+      entity_row: true
+      max: 168
+      name: Bed
+      positions:
+        indicator: 'off'
+        minmax: 'off'
+      type: custom:bar-card
+    - color: var(--disabled-text-color)
+      entity: sensor.time_in_kitchen_past_week
+      entity_row: true
+      max: 168
+      name: Kitchen
+      positions:
+        indicator: 'off'
+        minmax: 'off'
+      type: custom:bar-card
+    - color: var(--disabled-text-color)
+      entity: sensor.time_in_bathroom_past_week
+      entity_row: true
+      max: 168
+      name: Bathroom
+      positions:
+        indicator: 'off'
+        minmax: 'off'
+      type: custom:bar-card
+    - color: var(--disabled-text-color)
+      entity: sensor.time_in_outside_past_week
+      entity_row: true
+      max: 168
+      name: Away from home
+      positions:
+        indicator: 'off'
+        minmax: 'off'
+      type: custom:bar-card
+    - color: var(--disabled-text-color)
+      entity: sensor.time_in_work_past_week
+      entity_row: true
+      max: 168
+      name: Office
+      positions:
+        indicator: 'off'
+        minmax: 'off'
+      type: custom:bar-card
+    title: Time spent (past week)
+    type: entities
+  icon: mdi:chart-bar
+  path: statistics
+  theme: ''
+  title: Statistics
+- badges: []
+  cards:
+  - entities:
+    - entity: sensor.octopi_cpu_temperature
+      name: CPU temperature
+    - entity: sensor.octopi_cpu_usage
+      name: CPU usage
+    show_header_toggle: false
+    title: Octopi
+    type: entities
+  - entities:
+    - entity: sensor.cpu_temperature
+    - entity: sensor.processor_use
+    - entity: sensor.load_1m
+    - entity: sensor.memory_free
+    - entity: sensor.disk_use_percent
+    - entity: sensor.uptime
+    show_header_toggle: false
+    title: Hass.io
+    type: entities
+  - entities:
+    - entities:
+      - attribute: battery_level
+        entity: binary_sensor.wyzesense_7780209d
+        name: Bat.
+      - attribute: rssi
+        entity: binary_sensor.wyzesense_7780209d
+        name: Sig.
+      entity: binary_sensor.wyzesense_7780209d
+      state_header: State
+      type: custom:multiple-entity-row
+    - entities:
+      - attribute: battery_level
+        entity: binary_sensor.wyzesense_7781864c
+        name: null
+      - attribute: rssi
+        entity: binary_sensor.wyzesense_7781864c
+        name: null
+      entity: binary_sensor.wyzesense_7781864c
+      type: custom:multiple-entity-row
+    - entities:
+      - attribute: battery_level
+        entity: binary_sensor.wyzesense_77860e71
+        name: null
+      - attribute: rssi
+        entity: binary_sensor.wyzesense_77860e71
+        name: null
+      entity: binary_sensor.wyzesense_77860e71
+      type: custom:multiple-entity-row
+    - entities:
+      - attribute: battery_level
+        entity: binary_sensor.wyzesense_7784f1b2
+        name: null
+      - attribute: rssi
+        entity: binary_sensor.wyzesense_7784f1b2
+        name: null
+      entity: binary_sensor.wyzesense_7784f1b2
+      type: custom:multiple-entity-row
+    - entities:
+      - attribute: battery_level
+        entity: binary_sensor.wyzesense_7784f7a7
+        name: null
+      - attribute: rssi
+        entity: binary_sensor.wyzesense_7784f7a7
+        name: null
+      entity: binary_sensor.wyzesense_7784f7a7
+      type: custom:multiple-entity-row
+    - entities:
+      - attribute: battery_level
+        entity: binary_sensor.wyzesense_777fde74
+        name: null
+      - attribute: rssi
+        entity: binary_sensor.wyzesense_777fde74
+        name: null
+      entity: binary_sensor.wyzesense_777fde74
+      type: custom:multiple-entity-row
+    - entities:
+      - attribute: battery_level
+        entity: binary_sensor.wyzesense_7786890a
+        name: null
+      - attribute: rssi
+        entity: binary_sensor.wyzesense_7786890a
+        name: null
+      entity: binary_sensor.wyzesense_7786890a
+      type: custom:multiple-entity-row
+    - entities:
+      - attribute: battery_level
+        entity: binary_sensor.wyzesense_777f8f54
+        name: null
+      - attribute: rssi
+        entity: binary_sensor.wyzesense_777f8f54
+        name: null
+      entity: binary_sensor.wyzesense_777f8f54
+      type: custom:multiple-entity-row
+    title: Wyze sensors
+    type: entities
+  - entities:
+    - entity: sensor.desk_lamp_uptime
+    - entity: sensor.desk_lamp_wifi
+    show_header_toggle: false
+    title: 'Sonoff: desk lamp'
+    type: entities
+  - entities:
+    - entity: sensor.floor_lamp_uptime
+    - entity: sensor.floor_lamp_wifi
+    show_header_toggle: false
+    title: 'Sonoff: floor lamp'
+    type: entities
+  - entities:
+    - entity: sensor.kitchen_lights_uptime
+    - entity: sensor.kitchen_lights_wifi
+    show_header_toggle: false
+    title: 'Sonoff: kitchen lights'
+    type: entities
+  - entities:
+    - entity: sensor.kitchen_socket_uptime
+    - entity: sensor.kitchen_socket_wifi
+    show_header_toggle: false
+    title: 'Sonoff: kitchen socket'
+    type: entities
+  - cards:
+    - entities:
+      - entity: sensor.mood_light_uptime
+      - entity: sensor.mood_light_wifi
+      - entity: sensor.mood_light_ip
+      - entity: script.1566135307104
+      show_header_toggle: false
+      title: 'Sonoff: mood light'
+      type: entities
+    type: custom:vertical-stack-in-card
+  - entities:
+    - entity: sensor.ip_webcam_battery_level
+    - entity: sensor.ip_webcam_battery_temperature
+    - entity: sensor.ip_webcam_video_connections
+    show_header_toggle: false
+    title: Phone camera
+    type: entities
+  icon: mdi:lan
+  path: system
+  title: System
+- badges: []
+  cards:
+  - card:
+      title: Alerts
+      type: entities
+    filter:
+      include:
+      - name: Alert:*
+    sort: name
+    type: custom:auto-entities
+  - card:
+      title: Motion
+      type: entities
+    filter:
+      include:
+      - name: Motion:*
+    sort: name
+    type: custom:auto-entities
+  - card:
+      title: Location
+      type: entities
+    filter:
+      include:
+      - name: Location:*
+    sort: name
+    type: custom:auto-entities
+  - card:
+      title: Printer
+      type: entities
+    filter:
+      include:
+      - domain: automation
+        name: Printer:*
+    sort: name
+    type: custom:auto-entities
+  - card:
+      title: Others (switched on)
+      type: entities
+    filter:
+      exclude:
+      - name: Alert:*
+      - name: Motion:*
+      - name: Location:*
+      - name: Printer:*
+      - state: 'off'
+      include:
+      - entity_id: automation.*
+    sort: name
+    type: custom:auto-entities
+  - card:
+      title: Others (switched off)
+      type: entities
+    filter:
+      exclude:
+      - name: Alert:*
+      - name: Motion:*
+      - name: Location:*
+      - name: Printer:*
+      - state: 'on'
+      include:
+      - entity_id: automation.*
+    sort: last_triggered
+    type: custom:auto-entities
+  icon: mdi:playlist-play
+  path: automations
+  title: Automations
