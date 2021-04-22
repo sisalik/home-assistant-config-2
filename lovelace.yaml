@@ -1264,6 +1264,19 @@ views:
       type: custom:bar-card
     title: Time spent (past week)
     type: entities
+  - camera_image: camera.gas_meter
+    entity: camera.gas_meter
+    type: picture-entity
+  - entities:
+    - entity: light.gas_meter_cam_led
+      name: LED
+    - entity: sensor.gas_meter_cam_uptime
+      icon: mdi:clock
+      name: Uptime
+    - entity: sensor.gas_meter_cam_wifi
+      icon: mdi:wifi
+      name: Wifi
+    type: glance
   icon: mdi:chart-bar
   path: statistics
   theme: ''

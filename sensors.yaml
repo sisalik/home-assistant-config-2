@@ -250,6 +250,27 @@
       {% set hours = split_uptime[0].split("T")[1] %}
       {% set uptime_hours = days|int * 24 + hours|int + split_uptime[1]|int / 60 + split_uptime[2]|int / 3600 %}
       {{ uptime_hours | round(2) }}
+- platform: mqtt
+  name: Gas meter cam wifi
+  unit_of_measurement: "%"
+  state_topic: "tele/tasmota_5DA9DC/STATE"
+  value_template: "{{ value_json.Wifi.RSSI }}"
+  availability_topic: "tele/tasmota_5DA9DC/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+- platform: mqtt
+  name: Gas meter cam uptime
+  unit_of_measurement: "h"
+  state_topic: "tele/tasmota_5DA9DC/STATE"
+  availability_topic: "tele/tasmota_5DA9DC/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  value_template: >-
+      {% set split_uptime = value_json.Uptime.split(":") %}
+      {% set days = split_uptime[0].split("T")[0] %}
+      {% set hours = split_uptime[0].split("T")[1] %}
+      {% set uptime_hours = days|int * 24 + hours|int + split_uptime[1]|int / 60 + split_uptime[2]|int / 3600 %}
+      {{ uptime_hours | round(2) }}
 
 ################################################################################
 # Computer sensors

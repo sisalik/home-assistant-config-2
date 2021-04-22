@@ -73,6 +73,8 @@
   name: "Bathroom LED"
   state_topic: "stat/sonoff-00B6E9/POWER3"
   command_topic: "cmnd/sonoff-00B6E9/POWER3"
+  brightness_command_topic: "cmnd/sonoff-00B6E9/CHANNEL3"
+  brightness_scale: 100
   availability_topic: "tele/sonoff-00B6E9/LWT"
   payload_available: "Online"
   payload_not_available: "Offline"
@@ -83,6 +85,17 @@
   state_topic: "stat/sonoff-6089/POWER"
   command_topic: "cmnd/sonoff-6089/POWER"
   availability_topic: "tele/sonoff-6089/LWT"
+  payload_available: "Online"
+  payload_not_available: "Offline"
+  qos: 1
+  retain: false
+- platform: mqtt
+  name: "Gas meter cam LED"
+  state_topic: "stat/tasmota_5DA9DC/POWER"
+  command_topic: "cmnd/tasmota_5DA9DC/POWER"
+  brightness_command_topic: "cmnd/tasmota_5DA9DC/CHANNEL1"
+  brightness_scale: 100
+  availability_topic: "tele/tasmota_5DA9DC/LWT"
   payload_available: "Online"
   payload_not_available: "Offline"
   qos: 1

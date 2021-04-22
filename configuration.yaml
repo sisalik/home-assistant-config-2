@@ -123,6 +123,10 @@ camera:
   - name: Plants
     platform: ffmpeg
     input: !secret cam_plants_url
+  - name: Gas meter
+    platform: mjpeg
+    mjpeg_url: !secret cam_gas_meter_stream_url
+    still_image_url: !secret cam_gas_meter_image_url
 
 android_ip_webcam:
   - host: !secret cam_bedroom_url
