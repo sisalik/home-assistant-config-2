@@ -6,7 +6,7 @@ import hassapi as hass
 
 
 SCREEN_SENSOR = "binary_sensor.siim_s_phone_interactive"
-BATTERY_SENSOR = "sensor.battery_level"
+BATTERY_SENSOR = "sensor.siim_s_phone_battery_level"
 PC_SENSOR = "sensor.pc_idle_time"
 LOCATION_SENSOR = "sensor.siim_location"
 TIMEZONE_SENSOR = "sensor.siim_s_phone_current_time_zone"
